@@ -1,24 +1,40 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
+@using Microsoft.AspNetCore.Components.Rendering
 @typeparam TItem
 @attribute [CascadingTypeParameter(nameof(TItem))]
 
 <CascadingValue Value="@(this)" Name="Parent" IsFixed="true">
+    @{ isTableRenderPending = true; }
     @ChildContent
+    @* The columns receive their parameters while this content is diffed; TableDefer renders after them in the same pass. *@
+    @RenderDeferred()
 </CascadingValue>
 
-@if (IsResponsive)
-{
-    <div class="@ContainerClassNames" style="@TableContainerStyle" tabindex="0" role="@(HasCaption ? "region" : null)" aria-labelledby="@(HasCaption ? CaptionId : null)">
-        @RenderTable()
-    </div>
-}
-else
-{
-    @RenderTable()
-}
-
 @code {
+    private RenderFragment RenderDeferred() => builder =>
+    {
+        builder.OpenComponent<TableDefer>(0);
+        builder.AddComponentParameter(1, nameof(TableDefer.ChildContent), (RenderFragment)RenderContainer);
+        builder.CloseComponent();
+    };
+
+    private void RenderContainer(RenderTreeBuilder __builder)
+    {
+        isTableRenderPending = false;
+
+        @if (IsResponsive)
+        {
+            <div class="@ContainerClassNames" style="@TableContainerStyle" tabindex="0" role="@(HasCaption ? "region" : null)" aria-labelledby="@(HasCaption ? CaptionId : null)">
+                @RenderTable()
+            </div>
+        }
+        else
+        {
+            @RenderTable()
+        }
+    }
+
     private RenderFragment RenderTable() => __builder =>
     {
         var visibleColumns = GetVisibleColumns();

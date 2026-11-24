@@ -18,6 +18,12 @@ public partial class Table<TItem> : BlazorBootstrapComponentBase
 
     private readonly List<TableColumn<TItem>> columns = new();
 
+    /// <summary>
+    /// <see langword="true" /> from the start of the table's render until <see cref="TableDefer" /> builds the table markup.
+    /// A column change in that window is picked up by the same pass, so it needs no extra render.
+    /// </summary>
+    private bool isTableRenderPending;
+
     #endregion
 
     #region Methods
@@ -25,7 +31,7 @@ public partial class Table<TItem> : BlazorBootstrapComponentBase
     #region Internal Methods
 
     /// <summary>
-    /// Registers a column in declaration order and re-renders the table, which cannot see its columns until they initialize.
+    /// Registers a column in declaration order.
     /// </summary>
     internal void AddColumn(TableColumn<TItem> column)
     {
@@ -33,21 +39,22 @@ public partial class Table<TItem> : BlazorBootstrapComponentBase
             return;
 
         columns.Add(column);
-        StateHasChanged();
+        RenderIfIdle();
     }
 
     /// <summary>
-    /// Re-renders the table after a column parameter that changes its markup, such as <see cref="TableColumn{TItem}.IsVisible" />, changed.
+    /// Renders the table again after a column received new parameters outside the table's own render, for example when
+    /// a component that wraps the columns re-renders by itself.
     /// </summary>
-    internal void ColumnChanged() => StateHasChanged();
+    internal void ColumnChanged() => RenderIfIdle();
 
     /// <summary>
-    /// Removes a disposed column and re-renders the table.
+    /// Removes a disposed column.
     /// </summary>
     internal void RemoveColumn(TableColumn<TItem> column)
     {
         if (columns.Remove(column))
-            StateHasChanged();
+            RenderIfIdle();
     }
 
     /// <summary>
@@ -65,6 +72,12 @@ public partial class Table<TItem> : BlazorBootstrapComponentBase
             (BootstrapClass.TableActive, RowActive?.Invoke(item) ?? false)));
 
     private List<TableColumn<TItem>> GetVisibleColumns() => columns.Where(column => column.IsVisible).ToList();
+
+    private void RenderIfIdle()
+    {
+        if (!isTableRenderPending)
+            StateHasChanged();
+    }
 
     #endregion
 

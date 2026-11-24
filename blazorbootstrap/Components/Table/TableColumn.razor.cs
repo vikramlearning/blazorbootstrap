@@ -12,8 +12,6 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
 
     private bool isRegistered;
 
-    private object? renderedParameters;
-
     #endregion
 
     #region Methods
@@ -37,7 +35,6 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
     {
         base.OnInitialized();
 
-        renderedParameters = GetValueParameters();
         isRegistered = true;
         Parent.AddColumn(this);
     }
@@ -45,18 +42,8 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
-        // The table renders before its columns receive new parameters, so a changed value (for example a footer total)
-        // asks the table to render again. Templates and functions are read when the table renders, so they never go stale,
-        // and comparing only values keeps this from re-rendering in a loop.
-        var valueParameters = GetValueParameters();
-
-        if (!Equals(renderedParameters, valueParameters))
-        {
-            renderedParameters = valueParameters;
-
-            if (isRegistered)
-                Parent.ColumnChanged();
-        }
+        if (isRegistered)
+            Parent.ColumnChanged();
 
         base.OnParametersSet();
     }
@@ -76,13 +63,6 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
             (VerticalAlignment.ToTableVerticalAlignmentClass(), VerticalAlignment != TableVerticalAlignment.None),
             ((CellColor?.Invoke(item) ?? TableColor.None).ToTableColorClass(), CellColor is not null),
             (BootstrapClass.TableActive, CellActive?.Invoke(item) ?? false)));
-
-    #endregion
-
-    #region Private Methods
-
-    private object GetValueParameters() =>
-        (HeaderText, FooterText, HeaderClass, HeaderStyle, IsRowHeader, IsVisible, TextAlignment, HeaderTextAlignment, TextNoWrap, VerticalAlignment);
 
     #endregion
 
