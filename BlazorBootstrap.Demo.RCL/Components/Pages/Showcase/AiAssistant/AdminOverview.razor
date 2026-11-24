@@ -90,34 +90,15 @@
                 <p class="small mt-3 mb-2">@DailySummary(daily)</p>
                 <details class="pa-adov-details">
                     <summary>Tokens per day as a table</summary>
-                    <div class="table-responsive mt-2">
-                        <table class="table table-sm mb-0">
-                            <caption class="visually-hidden">Workspace tokens per day by model, the last 30 days, oldest first</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Day</th>
-                                    @foreach (var model in State.Models)
-                                    {
-                                        <th scope="col" class="text-end" @key="model.Id">@model.Name</th>
-                                    }
-                                    <th scope="col" class="text-end">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var day in daily)
-                                {
-                                    <tr @key="day.Date">
-                                        <th scope="row" class="fw-semibold text-nowrap">@day.Date.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</th>
-                                        @foreach (var model in State.Models)
-                                        {
-                                            <td class="text-end pa-mono" @key="model.Id">@AiDisplay.Tokens(day.ByModel.GetValueOrDefault(model.Id))</td>
-                                        }
-                                        <td class="text-end pa-mono fw-semibold">@AiDisplay.Tokens(day.Total)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="daily" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="day => day.Date"
+                           Caption="Workspace tokens per day by model, the last 30 days, oldest first" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Day" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold text-nowrap")" Context="day">@day.Date.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</TableColumn>
+                        @foreach (var model in State.Models)
+                        {
+                            <TableColumn HeaderText="@model.Name" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono")" Context="day">@AiDisplay.Tokens(day.ByModel.GetValueOrDefault(model.Id))</TableColumn>
+                        }
+                        <TableColumn HeaderText="Total" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono fw-semibold")" Context="day">@AiDisplay.Tokens(day.Total)</TableColumn>
+                    </Table>
                 </details>
             </section>
         </div>
@@ -131,34 +112,18 @@
                 <p class="small mt-3 mb-2">@ModelSummary(byModel)</p>
                 <details class="pa-adov-details">
                     <summary>Tokens by model as a table</summary>
-                    <div class="table-responsive mt-2">
-                        <table class="table table-sm mb-0">
-                            <caption class="visually-hidden">Tokens by model in @monthName, the most used first</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Model</th>
-                                    <th scope="col" class="text-end">Tokens</th>
-                                    <th scope="col" class="text-end">Share</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in byModel)
-                                {
-                                    <tr @key="item.Model.Id">
-                                        <th scope="row" class="fw-semibold">
-                                            @item.Model.Name
-                                            @if (!State.Policy.EnabledModelIds.Contains(item.Model.Id))
-                                            {
-                                                <span class="d-block small fw-normal text-body-secondary">Turned off</span>
-                                            }
-                                        </th>
-                                        <td class="text-end pa-mono">@AiDisplay.Tokens(item.Tokens)</td>
-                                        <td class="text-end pa-mono">@Percent(item.Tokens, byModel.Sum(other => other.Tokens))</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="byModel" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="item => item.Model.Id"
+                           Caption="@($"Tokens by model in {monthName}, the most used first")" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Model" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold")" Context="item">
+                            @item.Model.Name
+                            @if (!State.Policy.EnabledModelIds.Contains(item.Model.Id))
+                            {
+                                <span class="d-block small fw-normal text-body-secondary">Turned off</span>
+                            }
+                        </TableColumn>
+                        <TableColumn HeaderText="Tokens" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono")" Context="item">@AiDisplay.Tokens(item.Tokens)</TableColumn>
+                        <TableColumn HeaderText="Share" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono")" Context="item">@Percent(item.Tokens, byModel.Sum(other => other.Tokens))</TableColumn>
+                    </Table>
                 </details>
             </section>
         </div>
@@ -171,52 +136,33 @@
         </div>
         <ShowcaseDataState IsEmpty="@(rows.Count == 0)" EmptyIcon="IconName.People" EmptyTitle="Nobody has joined the workspace yet"
                            EmptyText="Invite people from Members and roles; their usage shows here once they chat.">
-            <div class="table-responsive">
-                <table class="table align-middle mb-0 pa-adov-top">
-                    <caption class="pa-adov-caption">
-                        Members by tokens used in @monthName, the most first (top @Math.Min(TopCount, rows.Count) of @rows.Count). Each share is of the member's own cap, or of the default of @AiDisplay.Tokens(quota) tokens a month.
-                    </caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col" class="text-end">Messages</th>
-                            <th scope="col" class="text-end">Tokens</th>
-                            <th scope="col" class="pa-adov-share">Share of cap</th>
-                            <th scope="col">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var row in rows.Take(TopCount))
-                        {
-                            var percent = SharePercent(row.Tokens, State.CapOf(row.Member));
-                            <tr @key="row.Member.Email">
-                                <th scope="row" class="pa-adov-name">
-                                    @row.Member.Name
-                                    @if (row.Member.AccountId is not null && row.Member.AccountId == State.Identity.Current?.Id)
-                                    {
-                                        <span class="fw-normal text-body-secondary">&#32;(you)</span>
-                                    }
-                                </th>
-                                <td class="pa-adov-email">@row.Member.Email</td>
-                                <td class="text-end pa-mono">@row.Messages.ToString("#,0", CultureInfo.InvariantCulture)</td>
-                                <td class="text-end pa-mono">@AiDisplay.Tokens(row.Tokens)</td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <Progress Height="6" Class="flex-grow-1">
-                                            <ProgressBar Width="Math.Min(100, percent)" Color="@QuotaColor(percent)"
-                                                         aria-label="@($"{row.Member.Name}, share of cap")" aria-valuenow="@Math.Round(percent)" aria-valuemin="0" aria-valuemax="100"
-                                                         aria-valuetext="@QuotaText(percent)" />
-                                        </Progress>
-                                        <span class="small text-nowrap">@QuotaText(percent)</span>
-                                    </div>
-                                </td>
-                                <td class="text-nowrap">@AiDisplay.StatusLabel(row.Member.Status)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+            <Table Data="rows.Take(TopCount)" Class="align-middle mb-0 pa-adov-top" Responsive="true" RowKeySelector="row => row.Member.Email" CaptionClass="pa-adov-caption"
+                   Caption="@($"Members by tokens used in {monthName}, the most first (top {Math.Min(TopCount, rows.Count)} of {rows.Count}). Each share is of the member's own cap, or of the default of {AiDisplay.Tokens(quota)} tokens a month.")">
+                <TableColumn HeaderText="Name" IsRowHeader="true" ColumnClass="@(_ => "pa-adov-name")" Context="row">
+                    @row.Member.Name
+                    @if (row.Member.AccountId is not null && row.Member.AccountId == State.Identity.Current?.Id)
+                    {
+                        <span class="fw-normal text-body-secondary">&#32;(you)</span>
+                    }
+                </TableColumn>
+                <TableColumn HeaderText="Email" ColumnClass="@(_ => "pa-adov-email")" Context="row">@row.Member.Email</TableColumn>
+                <TableColumn HeaderText="Messages" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono")" Context="row">@row.Messages.ToString("#,0", CultureInfo.InvariantCulture)</TableColumn>
+                <TableColumn HeaderText="Tokens" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono")" Context="row">@AiDisplay.Tokens(row.Tokens)</TableColumn>
+                <TableColumn HeaderText="Share of cap" HeaderClass="pa-adov-share" Context="row">
+                    @{
+                        var percent = SharePercent(row.Tokens, State.CapOf(row.Member));
+                    }
+                    <div class="d-flex align-items-center gap-2">
+                        <Progress Height="6" Class="flex-grow-1">
+                            <ProgressBar Width="Math.Min(100, percent)" Color="@QuotaColor(percent)"
+                                         aria-label="@($"{row.Member.Name}, share of cap")" aria-valuenow="@Math.Round(percent)" aria-valuemin="0" aria-valuemax="100"
+                                         aria-valuetext="@QuotaText(percent)" />
+                        </Progress>
+                        <span class="small text-nowrap">@QuotaText(percent)</span>
+                    </div>
+                </TableColumn>
+                <TableColumn HeaderText="Status" ColumnClass="@(_ => "text-nowrap")" Context="row">@AiDisplay.StatusLabel(row.Member.Status)</TableColumn>
+            </Table>
         </ShowcaseDataState>
     </section>
 

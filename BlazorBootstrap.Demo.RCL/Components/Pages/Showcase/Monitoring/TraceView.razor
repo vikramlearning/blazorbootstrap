@@ -97,44 +97,24 @@
         <Card Class="mw-card mb-4">
             <CardHeader><h2 class="mw-card-title">Spans as a table</h2></CardHeader>
             <CardBody Class="pt-2">
-                <div class="table-responsive mw-grid">
-                    <table class="table">
-                        <caption class="visually-hidden">Spans of trace @trace.TraceId in start order, with their parent, start offset, and duration</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Service</th>
-                                <th scope="col">Operation</th>
-                                <th scope="col">Parent</th>
-                                <th scope="col" class="text-end">Starts at</th>
-                                <th scope="col" class="text-end">Duration</th>
-                                <th scope="col">Result</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var (span, _) in Ordered(trace))
-                            {
-                                var parent = trace.Spans.FirstOrDefault(item => item.Id == span.ParentId);
-                                <tr @key="span.Id">
-                                    <th scope="row" class="text-nowrap fw-semibold">@ServiceName(span.ServiceId)</th>
-                                    <td class="tv-table-op"><span class="mw-mono">@span.Operation</span></td>
-                                    <td class="text-nowrap">@(parent is null ? "None (root)" : ServiceName(parent.ServiceId))</td>
-                                    <td class="text-end text-nowrap mw-mono">@MonitoringDisplay.Latency(span.StartMs)</td>
-                                    <td class="text-end text-nowrap mw-mono">@MonitoringDisplay.Latency(span.DurationMs)</td>
-                                    <td class="text-nowrap">
-                                        @if (span.IsError)
-                                        {
-                                            <span class="text-danger-emphasis fw-semibold"><Icon Name="IconName.XCircleFill" class="me-1" aria-hidden="true" />Error</span>
-                                        }
-                                        else
-                                        {
-                                            <span>OK</span>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <Table Data="Ordered(trace).Select(entry => entry.Span)" Responsive="true" TableContainerClass="mw-grid" RowKeySelector="span => span.Id"
+                       Caption="@($"Spans of trace {trace.TraceId} in start order, with their parent, start offset, and duration")" VisuallyHiddenCaption="true">
+                    <TableColumn HeaderText="Service" IsRowHeader="true" ColumnClass="@(_ => "text-nowrap fw-semibold")" Context="span">@ServiceName(span.ServiceId)</TableColumn>
+                    <TableColumn HeaderText="Operation" ColumnClass="@(_ => "tv-table-op")" Context="span"><span class="mw-mono">@span.Operation</span></TableColumn>
+                    <TableColumn HeaderText="Parent" ColumnClass="@(_ => "text-nowrap")" Context="span">@(trace.Spans.FirstOrDefault(item => item.Id == span.ParentId) is { } parent ? ServiceName(parent.ServiceId) : "None (root)")</TableColumn>
+                    <TableColumn HeaderText="Starts at" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap mw-mono")" Context="span">@MonitoringDisplay.Latency(span.StartMs)</TableColumn>
+                    <TableColumn HeaderText="Duration" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap mw-mono")" Context="span">@MonitoringDisplay.Latency(span.DurationMs)</TableColumn>
+                    <TableColumn HeaderText="Result" ColumnClass="@(_ => "text-nowrap")" Context="span">
+                        @if (span.IsError)
+                        {
+                            <span class="text-danger-emphasis fw-semibold"><Icon Name="IconName.XCircleFill" class="me-1" aria-hidden="true" />Error</span>
+                        }
+                        else
+                        {
+                            <span>OK</span>
+                        }
+                    </TableColumn>
+                </Table>
             </CardBody>
         </Card>
 

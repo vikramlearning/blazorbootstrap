@@ -160,33 +160,17 @@
                             {
                                 <details class="mw-uptime-details">
                                     <summary>Days with incidents<span class="visually-hidden"> for @service.Name</span> (@incidentDays.Count)</summary>
-                                    <div class="table-responsive mt-2">
-                                        <table class="table table-sm mb-0">
-                                            <caption class="visually-hidden">@service.Name: days with incidents in the last 90 days, newest first</caption>
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Day</th>
-                                                    <th scope="col">Status</th>
-                                                    <th scope="col">Incidents</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (var day in incidentDays)
-                                                {
-                                                    <tr @key="day.Date">
-                                                        <th scope="row" class="fw-semibold text-nowrap">@day.Date.ToString("MMM d", CultureInfo.InvariantCulture)</th>
-                                                        <td class="text-nowrap">@MonitoringDisplay.PublicStatusLabel(day.Status)</td>
-                                                        <td>
-                                                            @foreach (var incidentId in day.IncidentIds)
-                                                            {
-                                                                <a class="d-block" href="@MonitoringDisplay.PublicIncidentUrl(incidentId)" @key="incidentId">@IncidentLinkText(incidentId)</a>
-                                                            }
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <Table Data="incidentDays" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="day => day.Date"
+                                           Caption="@($"{service.Name}: days with incidents in the last 90 days, newest first")" VisuallyHiddenCaption="true">
+                                        <TableColumn HeaderText="Day" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold text-nowrap")" Context="day">@day.Date.ToString("MMM d", CultureInfo.InvariantCulture)</TableColumn>
+                                        <TableColumn HeaderText="Status" ColumnClass="@(_ => "text-nowrap")" Context="day">@MonitoringDisplay.PublicStatusLabel(day.Status)</TableColumn>
+                                        <TableColumn HeaderText="Incidents" Context="day">
+                                            @foreach (var incidentId in day.IncidentIds)
+                                            {
+                                                <a class="d-block" href="@MonitoringDisplay.PublicIncidentUrl(incidentId)" @key="incidentId">@IncidentLinkText(incidentId)</a>
+                                            }
+                                        </TableColumn>
+                                    </Table>
                                 </details>
                             }
                         </li>

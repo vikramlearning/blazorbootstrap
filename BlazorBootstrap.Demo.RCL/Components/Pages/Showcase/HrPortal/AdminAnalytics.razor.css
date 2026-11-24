@@ -46,6 +46,7 @@
         border-radius: .25rem;
     }
 
-.hr-aa-details .table {
+/* Table renders the table, so the rule reaches it through ::deep. */
+.hr-aa-details ::deep .table {
     font-size: .8125rem;
 }

@@ -92,28 +92,12 @@
                     <UsageChart Labels="report.DayLabels" Values="report.DayTokens" SeriesLabel="Tokens" AriaLabel="@($"Bar chart of tokens per day over the last 30 days. {report.DailySummary}")" />
                     <details class="pa-usage-details mt-3">
                         <summary>Show the data as a table</summary>
-                        <div class="table-responsive mt-2">
-                            <table class="table table-sm align-middle mb-0">
-                                <caption class="visually-hidden">Your tokens and messages per day, over the last 30 days, oldest first</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Day</th>
-                                        <th scope="col" class="text-end">Messages</th>
-                                        <th scope="col" class="text-end">Tokens</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var day in report.Days)
-                                    {
-                                        <tr @key="day.Date">
-                                            <th scope="row" class="fw-normal text-nowrap">@day.Date.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</th>
-                                            <td class="text-end pa-mono">@day.Messages.ToString("#,0", CultureInfo.InvariantCulture)</td>
-                                            <td class="text-end pa-mono">@day.Tokens.ToString("#,0", CultureInfo.InvariantCulture)</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                        <Table Data="report.Days" Class="table-sm align-middle mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="day => day.Date"
+                               Caption="Your tokens and messages per day, over the last 30 days, oldest first" VisuallyHiddenCaption="true">
+                            <TableColumn HeaderText="Day" IsRowHeader="true" ColumnClass="@(_ => "fw-normal text-nowrap")" Context="day">@day.Date.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</TableColumn>
+                            <TableColumn HeaderText="Messages" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono")" Context="day">@day.Messages.ToString("#,0", CultureInfo.InvariantCulture)</TableColumn>
+                            <TableColumn HeaderText="Tokens" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono")" Context="day">@day.Tokens.ToString("#,0", CultureInfo.InvariantCulture)</TableColumn>
+                        </Table>
                     </details>
                 </section>
             </div>
@@ -127,36 +111,19 @@
                                     SeriesLabel="Tokens" SeriesIndex="1" Height="200" AriaLabel="@($"Bar chart of tokens by model in {report.MonthName}. {report.ModelSummary}")" />
                         <details class="pa-usage-details mt-3">
                             <summary>Show the data as a table</summary>
-                            <div class="table-responsive mt-2">
-                                <table class="table table-sm align-middle mb-0">
-                                    <caption class="visually-hidden">Your tokens and messages by model in @report.MonthName, the most tokens first</caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Model</th>
-                                            <th scope="col" class="text-end">Messages</th>
-                                            <th scope="col" class="text-end">Tokens</th>
-                                            <th scope="col" class="text-end">Share</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var model in report.Models)
-                                        {
-                                            <tr @key="model.Id">
-                                                <th scope="row" class="fw-normal">
-                                                    @model.Name
-                                                    @if (!model.IsEnabled)
-                                                    {
-                                                        <span class="d-block small text-body-secondary">Turned off now</span>
-                                                    }
-                                                </th>
-                                                <td class="text-end pa-mono">@model.Messages.ToString("#,0", CultureInfo.InvariantCulture)</td>
-                                                <td class="text-end pa-mono">@model.Tokens.ToString("#,0", CultureInfo.InvariantCulture)</td>
-                                                <td class="text-end pa-mono">@Percent(model.Tokens, report.MonthTokens)</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            <Table Data="report.Models" Class="table-sm align-middle mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="model => model.Id"
+                                   Caption="@($"Your tokens and messages by model in {report.MonthName}, the most tokens first")" VisuallyHiddenCaption="true">
+                                <TableColumn HeaderText="Model" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="model">
+                                    @model.Name
+                                    @if (!model.IsEnabled)
+                                    {
+                                        <span class="d-block small text-body-secondary">Turned off now</span>
+                                    }
+                                </TableColumn>
+                                <TableColumn HeaderText="Messages" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono")" Context="model">@model.Messages.ToString("#,0", CultureInfo.InvariantCulture)</TableColumn>
+                                <TableColumn HeaderText="Tokens" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono")" Context="model">@model.Tokens.ToString("#,0", CultureInfo.InvariantCulture)</TableColumn>
+                                <TableColumn HeaderText="Share" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "pa-mono")" Context="model">@Percent(model.Tokens, report.MonthTokens)</TableColumn>
+                            </Table>
                         </details>
                     }
                 </section>

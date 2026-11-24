@@ -43,28 +43,12 @@
                 <p class="small mt-3 mb-2">@DepartmentSummary(figures)</p>
                 <details class="hr-aa-details">
                     <summary>Headcount by department as a table</summary>
-                    <div class="table-responsive mt-2">
-                        <table class="table table-sm mb-0">
-                            <caption class="visually-hidden">People working here today and people joining, by department</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Department</th>
-                                    <th scope="col" class="text-end">Working here</th>
-                                    <th scope="col" class="text-end">Joining</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var row in figures.Departments)
-                                {
-                                    <tr @key="row.Label">
-                                        <th scope="row" class="fw-semibold">@row.Label</th>
-                                        <td class="text-end hr-mono">@row.Count</td>
-                                        <td class="text-end hr-mono">@row.Joining</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="figures.Departments" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="row => row.Label"
+                           Caption="People working here today and people joining, by department" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Department" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold")" Context="row">@row.Label</TableColumn>
+                        <TableColumn HeaderText="Working here" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.Count</TableColumn>
+                        <TableColumn HeaderText="Joining" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.Joining</TableColumn>
+                    </Table>
                 </details>
             </section>
 
@@ -79,30 +63,13 @@
                 <p class="small mt-3 mb-2">@LocationSummary(figures)</p>
                 <details class="hr-aa-details">
                     <summary>Headcount by location as a table</summary>
-                    <div class="table-responsive mt-2">
-                        <table class="table table-sm mb-0">
-                            <caption class="visually-hidden">People working here today, their share, and people joining, by location</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Location</th>
-                                    <th scope="col" class="text-end">Working here</th>
-                                    <th scope="col" class="text-end">Share</th>
-                                    <th scope="col" class="text-end">Joining</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var row in figures.Locations)
-                                {
-                                    <tr @key="row.Label">
-                                        <th scope="row" class="fw-semibold">@row.Label</th>
-                                        <td class="text-end hr-mono">@row.Count</td>
-                                        <td class="text-end hr-mono">@Share(row.Count, figures.Active.Count)</td>
-                                        <td class="text-end hr-mono">@row.Joining</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="figures.Locations" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="row => row.Label"
+                           Caption="People working here today, their share, and people joining, by location" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Location" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold")" Context="row">@row.Label</TableColumn>
+                        <TableColumn HeaderText="Working here" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.Count</TableColumn>
+                        <TableColumn HeaderText="Share" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@Share(row.Count, figures.Active.Count)</TableColumn>
+                        <TableColumn HeaderText="Joining" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.Joining</TableColumn>
+                    </Table>
                 </details>
             </section>
 
@@ -116,28 +83,12 @@
                 <p class="small mt-3 mb-2">@MonthsSummary(figures)</p>
                 <details class="hr-aa-details">
                     <summary>Hires and leavers by month as a table</summary>
-                    <div class="table-responsive mt-2">
-                        <table class="table table-sm mb-0">
-                            <caption class="visually-hidden">Hires and leavers per month, oldest first</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Month</th>
-                                    <th scope="col" class="text-end">Hires</th>
-                                    <th scope="col" class="text-end">Leavers</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var row in figures.Months)
-                                {
-                                    <tr @key="row.Month">
-                                        <th scope="row" class="fw-semibold text-nowrap">@MonthText(row.Month)</th>
-                                        <td class="text-end hr-mono">@row.Hires</td>
-                                        <td class="text-end hr-mono">@row.Leavers</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="figures.Months" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="row => row.Month"
+                           Caption="Hires and leavers per month, oldest first" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Month" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold text-nowrap")" Context="row">@MonthText(row.Month)</TableColumn>
+                        <TableColumn HeaderText="Hires" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.Hires</TableColumn>
+                        <TableColumn HeaderText="Leavers" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.Leavers</TableColumn>
+                    </Table>
                 </details>
             </section>
 
@@ -151,28 +102,12 @@
                 <p class="small mt-3 mb-2">@TenureSummary(figures)</p>
                 <details class="hr-aa-details">
                     <summary>Tenure as a table</summary>
-                    <div class="table-responsive mt-2">
-                        <table class="table table-sm mb-0">
-                            <caption class="visually-hidden">People working here today by tenure band, shortest first</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Tenure</th>
-                                    <th scope="col" class="text-end">People</th>
-                                    <th scope="col" class="text-end">Share</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var row in figures.Tenure)
-                                {
-                                    <tr @key="row.Label">
-                                        <th scope="row" class="fw-semibold">@row.Label</th>
-                                        <td class="text-end hr-mono">@row.Count</td>
-                                        <td class="text-end hr-mono">@Share(row.Count, figures.Active.Count)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="figures.Tenure" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="row => row.Label"
+                           Caption="People working here today by tenure band, shortest first" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Tenure" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold")" Context="row">@row.Label</TableColumn>
+                        <TableColumn HeaderText="People" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.Count</TableColumn>
+                        <TableColumn HeaderText="Share" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@Share(row.Count, figures.Active.Count)</TableColumn>
+                    </Table>
                 </details>
             </section>
         </div>
@@ -197,36 +132,19 @@
                 <p class="small mt-3 mb-2">@LeaveSummary(figures)</p>
                 <details class="hr-aa-details">
                     <summary>Leave by policy as a table</summary>
-                    <div class="table-responsive mt-2">
-                        <table class="table table-sm mb-0">
-                            <caption class="visually-hidden">Leave days in @year by policy: approved, waiting for approval, and the requests behind them</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Policy</th>
-                                    <th scope="col" class="text-end">Approved days</th>
-                                    <th scope="col" class="text-end">Days waiting</th>
-                                    <th scope="col" class="text-end">Requests</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var row in figures.Leave)
-                                {
-                                    <tr @key="row.Policy.Id">
-                                        <th scope="row" class="fw-semibold">
-                                            @row.Policy.Name
-                                            @if (!row.Policy.IsActive)
-                                            {
-                                                <span class="d-block small fw-normal text-body-secondary">Turned off</span>
-                                            }
-                                        </th>
-                                        <td class="text-end hr-mono">@row.Approved</td>
-                                        <td class="text-end hr-mono">@row.Waiting</td>
-                                        <td class="text-end hr-mono">@row.Requests</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="figures.Leave" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="row => row.Policy.Id"
+                           Caption="@($"Leave days in {year} by policy: approved, waiting for approval, and the requests behind them")" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Policy" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold")" Context="row">
+                            @row.Policy.Name
+                            @if (!row.Policy.IsActive)
+                            {
+                                <span class="d-block small fw-normal text-body-secondary">Turned off</span>
+                            }
+                        </TableColumn>
+                        <TableColumn HeaderText="Approved days" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.Approved</TableColumn>
+                        <TableColumn HeaderText="Days waiting" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.Waiting</TableColumn>
+                        <TableColumn HeaderText="Requests" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.Requests</TableColumn>
+                    </Table>
                 </details>
             }
         </section>

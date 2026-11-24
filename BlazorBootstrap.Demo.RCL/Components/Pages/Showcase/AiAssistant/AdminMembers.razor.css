@@ -4,12 +4,13 @@
     overflow-wrap: anywhere;
 }
 
-.pa-admem-matrix th,
-.pa-admem-matrix td {
+/* Table renders the matrix's cells, so these reach them through ::deep. */
+::deep .pa-admem-matrix th,
+::deep .pa-admem-matrix td {
     font-size: .8125rem;
 }
 
-.pa-admem-matrix thead th {
+::deep .pa-admem-matrix thead th {
     white-space: nowrap;
 }
 

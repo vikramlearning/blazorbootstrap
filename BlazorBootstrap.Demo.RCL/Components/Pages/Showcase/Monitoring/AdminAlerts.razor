@@ -173,47 +173,31 @@
                 }
                 else
                 {
-                    <div class="table-responsive mw-grid border rounded-3">
-                        <table class="table mw-al-drill-table mb-0">
-                            <caption class="visually-hidden">Running drills, newest first. Time left is as of the last sample.</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Service</th>
-                                    <th scope="col">Impact</th>
-                                    <th scope="col">Started</th>
-                                    <th scope="col">Time left</th>
-                                    <th scope="col">Incident opened</th>
-                                    <th scope="col"><span class="visually-hidden">Actions</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var fault in RunningFaults)
+                    <Table Data="RunningFaults" Class="mw-al-drill-table mb-0" Responsive="true" TableContainerClass="mw-grid border rounded-3" RowKeySelector="fault => fault.Id"
+                           Caption="Running drills, newest first. Time left is as of the last sample." VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Service" IsRowHeader="true" Context="fault"><a href="@MonitoringDisplay.ServiceUrl(fault.ServiceId)">@ServiceName(fault.ServiceId)</a></TableColumn>
+                        <TableColumn HeaderText="Impact" Context="fault">@MonitoringDisplay.ImpactLabel(fault.Impact)</TableColumn>
+                        <TableColumn HeaderText="Started" ColumnClass="@(_ => "text-nowrap")" Context="fault"><span class="mw-mono">@MonitoringDisplay.Time(fault.Start)</span><span class="d-block small text-body-secondary">by @fault.CreatedBy</span></TableColumn>
+                        <TableColumn HeaderText="Time left" ColumnClass="@(_ => "text-nowrap")" Context="fault">@Left(fault.End - State.Clock.Now)<span class="d-block small text-body-secondary">ends <span class="mw-mono">@MonitoringDisplay.Time(fault.End)</span></span></TableColumn>
+                        <TableColumn HeaderText="Incident opened" Context="fault">
+                                @if (DrillIncident(fault) is { } opened)
                                 {
-                                    <tr @key="fault.Id">
-                                        <th scope="row"><a href="@MonitoringDisplay.ServiceUrl(fault.ServiceId)">@ServiceName(fault.ServiceId)</a></th>
-                                        <td>@MonitoringDisplay.ImpactLabel(fault.Impact)</td>
-                                        <td class="text-nowrap"><span class="mw-mono">@MonitoringDisplay.Time(fault.Start)</span><span class="d-block small text-body-secondary">by @fault.CreatedBy</span></td>
-                                        <td class="text-nowrap">@Left(fault.End - State.Clock.Now)<span class="d-block small text-body-secondary">ends <span class="mw-mono">@MonitoringDisplay.Time(fault.End)</span></span></td>
-                                        <td>
-                                            @if (DrillIncident(fault) is { } opened)
-                                            {
-                                                <a href="@MonitoringDisplay.IncidentUrl(opened.Id)">#@opened.Id</a>@(opened.IsPublished ? " (on the status page)" : null)
-                                            }
-                                            else
-                                            {
-                                                <span class="text-body-secondary">None yet</span>
-                                            }
-                                        </td>
-                                        <td class="text-end">
-                                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => StopDrill(fault)">
-                                                <Icon Name="IconName.StopFill" class="me-1" aria-hidden="true" />Stop<span class="visually-hidden"> the drill on @ServiceName(fault.ServiceId)</span>
-                                            </Button>
-                                        </td>
-                                    </tr>
+                                    <a href="@MonitoringDisplay.IncidentUrl(opened.Id)">#@opened.Id</a>@(opened.IsPublished ? " (on the status page)" : null)
                                 }
-                            </tbody>
-                        </table>
-                    </div>
+                                else
+                                {
+                                    <span class="text-body-secondary">None yet</span>
+                                }
+                        </TableColumn>
+                        <TableColumn TextAlignment="Alignment.End" Context="fault">
+                            <HeaderContent><span class="visually-hidden">Actions</span></HeaderContent>
+                            <ChildContent>
+                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => StopDrill(fault)">
+                                    <Icon Name="IconName.StopFill" class="me-1" aria-hidden="true" />Stop<span class="visually-hidden"> the drill on @ServiceName(fault.ServiceId)</span>
+                                </Button>
+                            </ChildContent>
+                        </TableColumn>
+                    </Table>
                 }
 
                 <h3 class="h6 fw-bold mt-4 mb-2">Recent drills</h3>
@@ -223,41 +207,23 @@
                 }
                 else
                 {
-                    <div class="table-responsive mw-grid border rounded-3">
-                        <table class="table mw-al-drill-table mb-0">
-                            <caption class="visually-hidden">The last @PastFaults.Count finished drills, newest first.</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Service</th>
-                                    <th scope="col">Impact</th>
-                                    <th scope="col">Started</th>
-                                    <th scope="col">Ran for</th>
-                                    <th scope="col">Incident opened</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var fault in PastFaults)
+                    <Table Data="PastFaults" Class="mw-al-drill-table mb-0" Responsive="true" TableContainerClass="mw-grid border rounded-3" RowKeySelector="fault => fault.Id"
+                           Caption="@($"The last {PastFaults.Count} finished drills, newest first.")" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Service" IsRowHeader="true" Context="fault"><a href="@MonitoringDisplay.ServiceUrl(fault.ServiceId)">@ServiceName(fault.ServiceId)</a></TableColumn>
+                        <TableColumn HeaderText="Impact" Context="fault">@MonitoringDisplay.ImpactLabel(fault.Impact)</TableColumn>
+                        <TableColumn HeaderText="Started" ColumnClass="@(_ => "text-nowrap")" Context="fault"><span class="mw-mono">@MonitoringDisplay.Stamp(fault.Start)</span><span class="d-block small text-body-secondary">by @fault.CreatedBy</span></TableColumn>
+                        <TableColumn HeaderText="Ran for" ColumnClass="@(_ => "text-nowrap")" Context="fault">@LengthLabel((int)Math.Round((fault.End - fault.Start).TotalSeconds))</TableColumn>
+                        <TableColumn HeaderText="Incident opened" Context="fault">
+                                @if (DrillIncident(fault) is { } opened)
                                 {
-                                    <tr @key="fault.Id">
-                                        <th scope="row"><a href="@MonitoringDisplay.ServiceUrl(fault.ServiceId)">@ServiceName(fault.ServiceId)</a></th>
-                                        <td>@MonitoringDisplay.ImpactLabel(fault.Impact)</td>
-                                        <td class="text-nowrap"><span class="mw-mono">@MonitoringDisplay.Stamp(fault.Start)</span><span class="d-block small text-body-secondary">by @fault.CreatedBy</span></td>
-                                        <td class="text-nowrap">@LengthLabel((int)Math.Round((fault.End - fault.Start).TotalSeconds))</td>
-                                        <td>
-                                            @if (DrillIncident(fault) is { } opened)
-                                            {
-                                                <a href="@MonitoringDisplay.IncidentUrl(opened.Id)">#@opened.Id</a>@(opened.IsPublished ? " (on the status page)" : null)
-                                            }
-                                            else
-                                            {
-                                                <span class="text-body-secondary">None</span>
-                                            }
-                                        </td>
-                                    </tr>
+                                    <a href="@MonitoringDisplay.IncidentUrl(opened.Id)">#@opened.Id</a>@(opened.IsPublished ? " (on the status page)" : null)
                                 }
-                            </tbody>
-                        </table>
-                    </div>
+                                else
+                                {
+                                    <span class="text-body-secondary">None</span>
+                                }
+                        </TableColumn>
+                    </Table>
                 }
             </CardBody>
         </Card>

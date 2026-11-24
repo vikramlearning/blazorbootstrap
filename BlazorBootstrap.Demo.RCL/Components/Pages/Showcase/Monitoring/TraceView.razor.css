@@ -106,7 +106,8 @@
     background: repeating-linear-gradient(135deg, var(--bs-danger) 0 6px, rgba(var(--bs-danger-rgb), .6) 6px 12px);
 }
 
-.tv-table-op {
+/* Table renders the cells, so the rule reaches them through ::deep. */
+::deep .tv-table-op {
     min-width: 14rem;
     font-size: .8125rem;
     overflow-wrap: anywhere;
