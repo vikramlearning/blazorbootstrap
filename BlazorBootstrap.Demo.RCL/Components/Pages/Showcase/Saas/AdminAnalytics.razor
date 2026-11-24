@@ -99,37 +99,21 @@
                 </div>
             </CardHeader>
             <CardBody Class="pt-0">
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <caption class="visually-hidden">Top pages of lumora.example for @CurrentRangeText</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col" class="small text-body-secondary">Page</th>
-                                <th scope="col" class="small text-body-secondary text-end">Views</th>
-                                <th scope="col" class="small text-body-secondary" style="min-width: 9rem;">Conversion</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var topPage in Snapshot.TopPages)
-                            {
-                                <tr @key="topPage.Path">
-                                    <th scope="row" class="fw-medium sd-mono small">@topPage.Path</th>
-                                    <td class="text-end sd-mono small">@topPage.Views.ToString("#,0", CultureInfo.InvariantCulture)</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <Progress Height="6" Class="flex-grow-1">
-                                                <ProgressBar Width="Math.Min(100, topPage.ConversionPercent * 10)"
-                                                             aria-label="@($"{topPage.Path} conversion")" aria-valuenow="@topPage.ConversionPercent" aria-valuemin="0" aria-valuemax="10"
-                                                             aria-valuetext="@($"{topPage.ConversionPercent.ToString("0.0", CultureInfo.InvariantCulture)}%")" />
-                                            </Progress>
-                                            <span class="small sd-mono">@topPage.ConversionPercent.ToString("0.0", CultureInfo.InvariantCulture)%</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <Table Data="Snapshot.TopPages" Class="align-middle mb-0" Responsive="true" RowKeySelector="topPage => topPage.Path"
+                       Caption="@($"Top pages of lumora.example for {CurrentRangeText}")" VisuallyHiddenCaption="true">
+                    <TableColumn HeaderText="Page" HeaderClass="small text-body-secondary" IsRowHeader="true" ColumnClass="@(_ => "fw-medium sd-mono small")" Context="topPage">@topPage.Path</TableColumn>
+                    <TableColumn HeaderText="Views" HeaderClass="small text-body-secondary" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "sd-mono small")" Context="topPage">@topPage.Views.ToString("#,0", CultureInfo.InvariantCulture)</TableColumn>
+                    <TableColumn HeaderText="Conversion" HeaderClass="small text-body-secondary" HeaderStyle="min-width: 9rem;" Context="topPage">
+                        <div class="d-flex align-items-center gap-2">
+                            <Progress Height="6" Class="flex-grow-1">
+                                <ProgressBar Width="Math.Min(100, topPage.ConversionPercent * 10)"
+                                             aria-label="@($"{topPage.Path} conversion")" aria-valuenow="@topPage.ConversionPercent" aria-valuemin="0" aria-valuemax="10"
+                                             aria-valuetext="@($"{topPage.ConversionPercent.ToString("0.0", CultureInfo.InvariantCulture)}%")" />
+                            </Progress>
+                            <span class="small sd-mono">@topPage.ConversionPercent.ToString("0.0", CultureInfo.InvariantCulture)%</span>
+                        </div>
+                    </TableColumn>
+                </Table>
             </CardBody>
         </Card>
     </div>

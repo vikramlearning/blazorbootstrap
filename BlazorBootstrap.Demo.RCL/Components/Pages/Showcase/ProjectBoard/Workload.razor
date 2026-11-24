@@ -48,32 +48,14 @@
                 <p class="small mt-3 mb-2">@Summary(rows)</p>
                 <details class="tb-wl-details">
                     <summary>Hours by person as a table</summary>
-                    <div class="table-responsive mt-2">
-                        <table class="table table-sm mb-0">
-                            <caption class="visually-hidden">Each person's open work in estimated hours, the busiest against capacity first</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Person</th>
-                                    <th scope="col" class="text-end">This week</th>
-                                    <th scope="col" class="text-end">Capacity</th>
-                                    <th scope="col" class="text-end">Later</th>
-                                    <th scope="col" class="text-end">Open tasks</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var row in rows)
-                                {
-                                    <tr @key="row.Person.Id">
-                                        <th scope="row" class="fw-semibold">@row.Person.Name</th>
-                                        <td class="text-end tb-mono">@Hours(row.HoursThisWeek)</td>
-                                        <td class="text-end tb-mono">@Hours(row.Person.CapacityHours)</td>
-                                        <td class="text-end tb-mono">@Hours(row.HoursLater)</td>
-                                        <td class="text-end tb-mono">@row.Open.Count</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="rows" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="row => row.Person.Id"
+                           Caption="Each person's open work in estimated hours, the busiest against capacity first" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Person" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold")" Context="row">@row.Person.Name</TableColumn>
+                        <TableColumn HeaderText="This week" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="row">@Hours(row.HoursThisWeek)</TableColumn>
+                        <TableColumn HeaderText="Capacity" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="row">@Hours(row.Person.CapacityHours)</TableColumn>
+                        <TableColumn HeaderText="Later" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="row">@Hours(row.HoursLater)</TableColumn>
+                        <TableColumn HeaderText="Open tasks" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="row">@row.Open.Count</TableColumn>
+                    </Table>
                 </details>
             }
         </section>
@@ -120,53 +102,39 @@
 
                         @if (open)
                         {
-                            <div class="table-responsive mt-3" id="@panelId">
-                                <table class="table table-sm align-middle mb-0 tb-wl-table">
-                                    <caption class="visually-hidden">@person.Name's open tasks by due date, with a control to reassign each</caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Key</th>
-                                            <th scope="col">Task</th>
-                                            <th scope="col">Project</th>
-                                            <th scope="col">Due</th>
-                                            <th scope="col" class="text-end">Estimate</th>
-                                            <th scope="col">Reassign</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var task in row.Open)
-                                        {
+                            @* The panel's id is the target of the toggle's aria-controls, so it stays on an element this page renders. *@
+                            <div class="mt-3" id="@panelId">
+                                <Table Data="row.Open" Class="table-sm align-middle mb-0 tb-wl-table" Responsive="true" RowKeySelector="task => task.Id"
+                                       Caption="@($"{person.Name}'s open tasks by due date, with a control to reassign each")" VisuallyHiddenCaption="true">
+                                    <TableColumn HeaderText="Key" ColumnClass="@(_ => "text-nowrap")" Context="task"><span class="tb-key">@State.TaskKey(task)</span></TableColumn>
+                                    <TableColumn HeaderText="Task" IsRowHeader="true" ColumnClass="@(_ => "tb-wl-title")" Context="task"><a href="@PbDisplay.TaskUrl(task.Id)">@task.Title</a></TableColumn>
+                                    <TableColumn HeaderText="Project" ColumnClass="@(_ => "tb-wl-project")" Context="task">@(State.FindProject(task.ProjectId)?.Name ?? "Unknown project")</TableColumn>
+                                    <TableColumn HeaderText="Due" ColumnClass="@(task => PbDisplay.IsOverdue(task, today) ? "text-nowrap text-danger-emphasis fw-semibold" : "text-nowrap")" Context="task">@PbDisplay.Due(task.DueDate, today)</TableColumn>
+                                    <TableColumn HeaderText="Estimate" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap tb-mono")" Context="task">@Hours(task.EstimateHours)</TableColumn>
+                                    <TableColumn HeaderText="Reassign" Context="task">
+                                        @{
                                             var project = State.FindProject(task.ProjectId);
                                             var taskKey = State.TaskKey(task);
                                             var taskId = task.Id;
                                             var selectId = $"tb-wl-assign-{taskId}";
                                             var draft = Draft(task);
-                                            <tr @key="taskId">
-                                                <td class="text-nowrap"><span class="tb-key">@taskKey</span></td>
-                                                <th scope="row" class="tb-wl-title"><a href="@PbDisplay.TaskUrl(taskId)">@task.Title</a></th>
-                                                <td class="tb-wl-project">@(project?.Name ?? "Unknown project")</td>
-                                                <td class="text-nowrap @(PbDisplay.IsOverdue(task, today) ? "text-danger-emphasis fw-semibold" : null)">@PbDisplay.Due(task.DueDate, today)</td>
-                                                <td class="text-end text-nowrap tb-mono">@Hours(task.EstimateHours)</td>
-                                                <td>
-                                                    <div class="d-flex flex-nowrap gap-1">
-                                                        <label class="visually-hidden" for="@selectId">Assignee for @taskKey</label>
-                                                        <select id="@selectId" class="form-select form-select-sm tb-wl-select" value="@draft" @onchange="args => SetDraft(taskId, args.Value as string)">
-                                                            @foreach (var member in Members(project))
-                                                            {
-                                                                <option value="@member.Id" @key="member.Id">@member.Name</option>
-                                                            }
-                                                            <option value="">Unassigned</option>
-                                                        </select>
-                                                        <button type="button" class="btn btn-sm btn-primary text-nowrap" disabled="@(draft == (task.AssigneeId ?? string.Empty))"
-                                                                @onclick="() => Reassign(taskId, personId)">
-                                                            Reassign<span class="visually-hidden">&#32;@taskKey</span>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
                                         }
-                                    </tbody>
-                                </table>
+                                        <div class="d-flex flex-nowrap gap-1">
+                                            <label class="visually-hidden" for="@selectId">Assignee for @taskKey</label>
+                                            <select id="@selectId" class="form-select form-select-sm tb-wl-select" value="@draft" @onchange="args => SetDraft(taskId, args.Value as string)">
+                                                @foreach (var member in Members(project))
+                                                {
+                                                    <option value="@member.Id" @key="member.Id">@member.Name</option>
+                                                }
+                                                <option value="">Unassigned</option>
+                                            </select>
+                                            <button type="button" class="btn btn-sm btn-primary text-nowrap" disabled="@(draft == (task.AssigneeId ?? string.Empty))"
+                                                    @onclick="() => Reassign(taskId, personId)">
+                                                Reassign<span class="visually-hidden">&#32;@taskKey</span>
+                                            </button>
+                                        </div>
+                                    </TableColumn>
+                                </Table>
                             </div>
                         }
                     </li>

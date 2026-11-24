@@ -57,28 +57,12 @@
                 </div>
                 @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
                 <div class="visually-hidden">
-                <table>
-                    <caption>Money collected and refunded per month, @(MonthName(months[0].Month)) to @(MonthName(months[^1].Month))</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Month</th>
-                            <th scope="col">Collected</th>
-                            <th scope="col">Refunded</th>
-                            <th scope="col">Net</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var month in months)
-                        {
-                            <tr @key="month.Month">
-                                <th scope="row">@MonthName(month.Month)</th>
-                                <td>@SaasDisplay.MoneyCents(month.Collected)</td>
-                                <td>@SaasDisplay.MoneyCents(month.Refunded)</td>
-                                <td>@SaasDisplay.MoneyCents(month.Collected - month.Refunded)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <Table Data="months" RowKeySelector="month => month.Month" Caption="@($"Money collected and refunded per month, {MonthName(months[0].Month)} to {MonthName(months[^1].Month)}")">
+                    <TableColumn HeaderText="Month" IsRowHeader="true" Context="month">@MonthName(month.Month)</TableColumn>
+                    <TableColumn HeaderText="Collected" Context="month">@SaasDisplay.MoneyCents(month.Collected)</TableColumn>
+                    <TableColumn HeaderText="Refunded" Context="month">@SaasDisplay.MoneyCents(month.Refunded)</TableColumn>
+                    <TableColumn HeaderText="Net" Context="month">@SaasDisplay.MoneyCents(month.Collected - month.Refunded)</TableColumn>
+                </Table>
                 </div>
             </CardBody>
         </Card>
@@ -101,28 +85,12 @@
                 }
                 @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
                 <div class="visually-hidden">
-                <table>
-                    <caption>MRR by plan</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Plan</th>
-                            <th scope="col">MRR</th>
-                            <th scope="col">Share</th>
-                            <th scope="col">Paying tenants</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var entry in planMrr)
-                        {
-                            <tr @key="entry.Plan.Id">
-                                <th scope="row">@entry.Plan.Name</th>
-                                <td>@SaasDisplay.Money(entry.Mrr)</td>
-                                <td>@(totalMrr == 0 ? "0%" : Percent((double)(entry.Mrr / totalMrr * 100)))</td>
-                                <td>@Count(entry.Paying)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <Table Data="planMrr" RowKeySelector="entry => entry.Plan.Id" Caption="MRR by plan">
+                    <TableColumn HeaderText="Plan" IsRowHeader="true" Context="entry">@entry.Plan.Name</TableColumn>
+                    <TableColumn HeaderText="MRR" Context="entry">@SaasDisplay.Money(entry.Mrr)</TableColumn>
+                    <TableColumn HeaderText="Share" Context="entry">@(totalMrr == 0 ? "0%" : Percent((double)(entry.Mrr / totalMrr * 100)))</TableColumn>
+                    <TableColumn HeaderText="Paying tenants" Context="entry">@Count(entry.Paying)</TableColumn>
+                </Table>
                 </div>
             </CardBody>
         </Card>
@@ -144,26 +112,11 @@
                 </div>
                 @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
                 <div class="visually-hidden">
-                <table>
-                    <caption>Tenants by status</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Status</th>
-                            <th scope="col">Tenants</th>
-                            <th scope="col">MRR</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var entry in statusCounts)
-                        {
-                            <tr @key="entry.Status">
-                                <th scope="row">@SaasDisplay.StatusName(entry.Status)</th>
-                                <td>@Count(entry.Tenants)</td>
-                                <td>@SaasDisplay.Money(entry.Mrr)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <Table Data="statusCounts" RowKeySelector="entry => entry.Status" Caption="Tenants by status">
+                    <TableColumn HeaderText="Status" IsRowHeader="true" Context="entry">@SaasDisplay.StatusName(entry.Status)</TableColumn>
+                    <TableColumn HeaderText="Tenants" Context="entry">@Count(entry.Tenants)</TableColumn>
+                    <TableColumn HeaderText="MRR" Context="entry">@SaasDisplay.Money(entry.Mrr)</TableColumn>
+                </Table>
                 </div>
             </CardBody>
         </Card>
@@ -183,47 +136,25 @@
                 }
                 else
                 {
-                    <div class="table-responsive sd-grid">
-                        <table class="table align-middle">
-                            <caption class="visually-hidden">Top @TopCount tenants by MRR, highest first</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col" class="text-end">Rank</th>
-                                    <th scope="col">Tenant</th>
-                                    <th scope="col">Plan</th>
-                                    <th scope="col" class="text-end">Seats</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col" class="text-end">MRR</th>
-                                    <th scope="col" class="text-end">Share</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (var index = 0; index < top.Count; index++)
-                                {
-                                    var workspace = top[index];
-                                    var mrr = State.MonthlyRevenueFor(workspace);
-
-                                    <tr @key="workspace.Id">
-                                        <td class="text-end sd-mono">@(index + 1)</td>
-                                        <th scope="row" class="fw-normal">
-                                            <div class="sd-person">
-                                                <Avatar Name="@workspace.Name" Color="SaasDisplay.AvatarColorFor(workspace.Id)" Size="AvatarSize.Small" />
-                                                <span class="sd-person-text">
-                                                    <a class="sd-person-name" href="@($"{SaasAdminLayout.Base}/tenants/{workspace.Id}")">@workspace.Name</a>
-                                                    <span class="sd-person-email">@(workspace.Period == SaasBillingPeriod.Annual ? "Billed annually" : "Billed monthly")</span>
-                                                </span>
-                                            </div>
-                                        </th>
-                                        <td><Badge Color="SaasDisplay.PlanColor(workspace.PlanId)" Class="rounded-pill">@State.PlanOf(workspace).Name</Badge></td>
-                                        <td class="text-end sd-mono">@Count(workspace.Seats)</td>
-                                        <td><Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge></td>
-                                        <td class="text-end text-nowrap sd-mono">@SaasDisplay.Money(mrr)</td>
-                                        <td class="text-end text-nowrap sd-mono">@(totalMrr == 0 ? "0%" : Percent((double)(mrr / totalMrr * 100)))</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="top.Select((workspace, index) => (Workspace: workspace, Rank: index + 1, Mrr: State.MonthlyRevenueFor(workspace)))" Class="align-middle"
+                           Responsive="true" TableContainerClass="sd-grid" RowKeySelector="row => row.Workspace.Id"
+                           Caption="@($"Top {TopCount} tenants by MRR, highest first")" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Rank" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "sd-mono")" Context="row">@row.Rank</TableColumn>
+                        <TableColumn HeaderText="Tenant" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="row">
+                            <div class="sd-person">
+                                <Avatar Name="@row.Workspace.Name" Color="SaasDisplay.AvatarColorFor(row.Workspace.Id)" Size="AvatarSize.Small" />
+                                <span class="sd-person-text">
+                                    <a class="sd-person-name" href="@($"{SaasAdminLayout.Base}/tenants/{row.Workspace.Id}")">@row.Workspace.Name</a>
+                                    <span class="sd-person-email">@(row.Workspace.Period == SaasBillingPeriod.Annual ? "Billed annually" : "Billed monthly")</span>
+                                </span>
+                            </div>
+                        </TableColumn>
+                        <TableColumn HeaderText="Plan" Context="row"><Badge Color="SaasDisplay.PlanColor(row.Workspace.PlanId)" Class="rounded-pill">@State.PlanOf(row.Workspace).Name</Badge></TableColumn>
+                        <TableColumn HeaderText="Seats" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "sd-mono")" Context="row">@Count(row.Workspace.Seats)</TableColumn>
+                        <TableColumn HeaderText="Status" Context="row"><Badge Color="SaasDisplay.StatusColor(row.Workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(row.Workspace.Status)</Badge></TableColumn>
+                        <TableColumn HeaderText="MRR" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap sd-mono")" Context="row">@SaasDisplay.Money(row.Mrr)</TableColumn>
+                        <TableColumn HeaderText="Share" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap sd-mono")" Context="row">@(totalMrr == 0 ? "0%" : Percent((double)(row.Mrr / totalMrr * 100)))</TableColumn>
+                    </Table>
                 }
             </CardBody>
         </Card>

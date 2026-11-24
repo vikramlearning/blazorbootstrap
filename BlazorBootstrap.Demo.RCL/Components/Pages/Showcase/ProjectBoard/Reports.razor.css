@@ -34,36 +34,37 @@
         border-radius: .25rem;
     }
 
-.tb-rp-details .table {
+/* Table renders the tables, captions and cells, so these reach them through ::deep. */
+.tb-rp-details ::deep .table {
     font-size: .8125rem;
 }
 
-.tb-rp-caption {
+::deep .tb-rp-caption {
     caption-side: top;
     padding-top: 0;
     font-size: .8125rem;
     color: var(--bs-secondary-color);
 }
 
-.tb-rp-table {
+::deep .tb-rp-table {
     font-size: .875rem;
 }
 
-.tb-rp-name {
+::deep .tb-rp-name {
     min-width: 13rem;
     overflow-wrap: anywhere;
 }
 
-.tb-rp-project {
+::deep .tb-rp-project {
     min-width: 10rem;
     overflow-wrap: anywhere;
 }
 
-.tb-rp-progress {
+::deep .tb-rp-progress {
     min-width: 9rem;
 }
 
-.tb-rp-next {
+::deep .tb-rp-next {
     min-width: 13rem;
     overflow-wrap: anywhere;
 }

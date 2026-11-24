@@ -252,42 +252,25 @@
                 }
                 else
                 {
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0">
-                            <caption class="tb-inv-caption">Lines by project and person at today's rates, in @client.BillingCurrency.</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Project</th>
-                                    <th scope="col">Person</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col" class="text-end">Hours</th>
-                                    <th scope="col" class="text-end">Rate</th>
-                                    <th scope="col" class="text-end">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var line in preview)
-                                {
-                                    <tr @key="@($"{line.ProjectId}-{line.PersonId}")">
-                                        <th scope="row" class="fw-normal"><span class="tb-key">@State.FindProject(line.ProjectId)?.Key</span></th>
-                                        <td>@State.FindPerson(line.PersonId)?.Name</td>
-                                        <td>@PbState.RoleName(line.Role)</td>
-                                        <td class="text-end tb-mono">@line.Hours.ToString("0.##", CultureInfo.InvariantCulture)</td>
-                                        <td class="text-end tb-mono">@line.Rate.ToString(CultureInfo.InvariantCulture)</td>
-                                        <td class="text-end tb-mono">@line.Amount.ToString("#,0.00", CultureInfo.InvariantCulture)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th scope="row" colspan="3">Total</th>
-                                    <td class="text-end tb-mono fw-semibold">@preview.Sum(line => line.Hours).ToString("0.##", CultureInfo.InvariantCulture)</td>
-                                    <td></td>
-                                    <td class="text-end tb-mono fw-bold">@client.BillingCurrency @preview.Sum(line => line.Amount).ToString("#,0.00", CultureInfo.InvariantCulture)</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                    <Table Data="preview" Class="table-sm align-middle mb-0" Responsive="true" RowKeySelector="@(line => $"{line.ProjectId}-{line.PersonId}")" CaptionClass="tb-inv-caption"
+                           Caption="@($"Lines by project and person at today's rates, in {client.BillingCurrency}.")">
+                        <ChildContent>
+                            <TableColumn HeaderText="Project" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="line"><span class="tb-key">@State.FindProject(line.ProjectId)?.Key</span></TableColumn>
+                            <TableColumn HeaderText="Person" Context="line">@State.FindPerson(line.PersonId)?.Name</TableColumn>
+                            <TableColumn HeaderText="Role" Context="line">@PbState.RoleName(line.Role)</TableColumn>
+                            <TableColumn HeaderText="Hours" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="line">@line.Hours.ToString("0.##", CultureInfo.InvariantCulture)</TableColumn>
+                            <TableColumn HeaderText="Rate" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="line">@line.Rate.ToString(CultureInfo.InvariantCulture)</TableColumn>
+                            <TableColumn HeaderText="Amount" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="line">@line.Amount.ToString("#,0.00", CultureInfo.InvariantCulture)</TableColumn>
+                        </ChildContent>
+                        <FooterTemplate>
+                            <tr>
+                                <th scope="row" colspan="3">Total</th>
+                                <td class="text-end tb-mono fw-semibold">@preview.Sum(line => line.Hours).ToString("0.##", CultureInfo.InvariantCulture)</td>
+                                <td></td>
+                                <td class="text-end tb-mono fw-bold">@client.BillingCurrency @preview.Sum(line => line.Amount).ToString("#,0.00", CultureInfo.InvariantCulture)</td>
+                            </tr>
+                        </FooterTemplate>
+                    </Table>
                 }
                 <p class="tb-form-error small mt-3 mb-0" role="alert">@formMessage</p>
             </BodyTemplate>

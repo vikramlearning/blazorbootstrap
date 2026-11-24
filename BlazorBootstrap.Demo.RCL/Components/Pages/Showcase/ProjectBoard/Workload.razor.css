@@ -39,18 +39,19 @@
         border-radius: .25rem;
     }
 
-.tb-wl-details .table,
-.tb-wl-table {
+/* Table renders the tables and cells, so these reach them through ::deep. */
+.tb-wl-details ::deep .table,
+::deep .tb-wl-table {
     font-size: .8125rem;
 }
 
-.tb-wl-title {
+::deep .tb-wl-title {
     min-width: 12rem;
     font-weight: 600;
     overflow-wrap: anywhere;
 }
 
-.tb-wl-project {
+::deep .tb-wl-project {
     min-width: 9rem;
     overflow-wrap: anywhere;
 }

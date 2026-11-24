@@ -60,69 +60,46 @@
                         }
                         else
                         {
-                            <div class="table-responsive">
-                                <table class="table table-sm align-middle mb-0 tb-invd-table">
-                                    <caption class="tb-invd-caption">
-                                        @(invoice.IsImported ? "Billed from before time tracking: the project's hours at its agreed rate." : "One line per project and person: approved billable hours at the person's role's rate when the draft was made.")
-                                        Amounts in @invoice.Currency.
-                                    </caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Project</th>
-                                            <th scope="col">Person</th>
-                                            <th scope="col">Role</th>
-                                            <th scope="col" class="text-end">Hours</th>
-                                            <th scope="col" class="text-end">Rate</th>
-                                            <th scope="col" class="text-end">Amount</th>
-                                            @if (invoice.Status == PbInvoiceStatus.Draft)
-                                            {
-                                                <th scope="col"><span class="visually-hidden">Actions</span></th>
-                                            }
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var line in invoice.Lines)
+                            <Table Data="invoice.Lines" Class="table-sm align-middle mb-0 tb-invd-table" Responsive="true" RowKeySelector="line => line.Id" CaptionClass="tb-invd-caption"
+                                   Caption="@($"{(invoice.IsImported ? "Billed from before time tracking: the project's hours at its agreed rate." : "One line per project and person: approved billable hours at the person's role's rate when the draft was made.")} Amounts in {invoice.Currency}.")">
+                                <ChildContent>
+                                    <TableColumn HeaderText="Project" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="line">
+                                        @if (State.FindProject(line.ProjectId) is { } project)
                                         {
-                                            var project = State.FindProject(line.ProjectId);
-                                            var person = State.FindPerson(line.PersonId);
-                                            var lineId = line.Id;
-                                            <tr @key="line.Id">
-                                                <th scope="row" class="fw-normal">
-                                                    @if (project is not null)
-                                                    {
-                                                        <a href="@PbDisplay.ProjectUrl(project.Id)"><span class="tb-key me-1">@project.Key</span>@project.Name</a>
-                                                    }
-                                                </th>
-                                                <td>@(line.PersonId is null ? "Project total" : person?.Name ?? "A former teammate")</td>
-                                                <td>@PbState.RoleName(line.Role)</td>
-                                                <td class="text-end tb-mono">@line.Hours.ToString("0.##", CultureInfo.InvariantCulture)</td>
-                                                <td class="text-end tb-mono">@line.Rate.ToString(CultureInfo.InvariantCulture)</td>
-                                                <td class="text-end tb-mono">@line.Amount.ToString("#,0.00", CultureInfo.InvariantCulture)</td>
-                                                @if (invoice.Status == PbInvoiceStatus.Draft)
-                                                {
-                                                    <td class="text-end">
-                                                        <button type="button" class="btn btn-sm btn-outline-danger text-nowrap" @onclick="() => RemoveLine(lineId)">
-                                                            Remove<span class="visually-hidden">&#32;the line of @(person?.Name) on @(project?.Key)</span>
-                                                        </button>
-                                                    </td>
-                                                }
-                                            </tr>
+                                            <a href="@PbDisplay.ProjectUrl(project.Id)"><span class="tb-key me-1">@project.Key</span>@project.Name</a>
                                         }
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th scope="row" colspan="3">Total</th>
-                                            <td class="text-end tb-mono fw-semibold">@invoice.Lines.Sum(line => line.Hours).ToString("0.##", CultureInfo.InvariantCulture)</td>
-                                            <td></td>
-                                            <td class="text-end tb-mono fw-bold">@total.ToString("#,0.00", CultureInfo.InvariantCulture)</td>
-                                            @if (invoice.Status == PbInvoiceStatus.Draft)
-                                            {
-                                                <td></td>
+                                    </TableColumn>
+                                    <TableColumn HeaderText="Person" Context="line">@(line.PersonId is null ? "Project total" : State.FindPerson(line.PersonId)?.Name ?? "A former teammate")</TableColumn>
+                                    <TableColumn HeaderText="Role" Context="line">@PbState.RoleName(line.Role)</TableColumn>
+                                    <TableColumn HeaderText="Hours" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="line">@line.Hours.ToString("0.##", CultureInfo.InvariantCulture)</TableColumn>
+                                    <TableColumn HeaderText="Rate" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="line">@line.Rate.ToString(CultureInfo.InvariantCulture)</TableColumn>
+                                    <TableColumn HeaderText="Amount" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="line">@line.Amount.ToString("#,0.00", CultureInfo.InvariantCulture)</TableColumn>
+                                    @* Only a draft's lines can be removed. *@
+                                    <TableColumn IsVisible="@(invoice.Status == PbInvoiceStatus.Draft)" TextAlignment="Alignment.End" Context="line">
+                                        <HeaderContent><span class="visually-hidden">Actions</span></HeaderContent>
+                                        <ChildContent>
+                                            @{
+                                                var lineId = line.Id;
                                             }
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-danger text-nowrap" @onclick="() => RemoveLine(lineId)">
+                                                Remove<span class="visually-hidden">&#32;the line of @(State.FindPerson(line.PersonId)?.Name) on @(State.FindProject(line.ProjectId)?.Key)</span>
+                                            </button>
+                                        </ChildContent>
+                                    </TableColumn>
+                                </ChildContent>
+                                <FooterTemplate>
+                                    <tr>
+                                        <th scope="row" colspan="3">Total</th>
+                                        <td class="text-end tb-mono fw-semibold">@invoice.Lines.Sum(line => line.Hours).ToString("0.##", CultureInfo.InvariantCulture)</td>
+                                        <td></td>
+                                        <td class="text-end tb-mono fw-bold">@total.ToString("#,0.00", CultureInfo.InvariantCulture)</td>
+                                        @if (invoice.Status == PbInvoiceStatus.Draft)
+                                        {
+                                            <td></td>
+                                        }
+                                    </tr>
+                                </FooterTemplate>
+                            </Table>
                         }
                     </section>
                 </div>

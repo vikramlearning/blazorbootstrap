@@ -156,30 +156,13 @@ else
                     }
                     else
                     {
-                        <div class="table-responsive sd-grid">
-                            <table class="table align-middle">
-                                <caption class="visually-hidden">History of invoice @invoice.Number, newest first</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Time</th>
-                                        <th scope="col">By</th>
-                                        <th scope="col">Action</th>
-                                        <th scope="col">Detail</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var entry in history)
-                                    {
-                                        <tr @key="entry.Id">
-                                            <td class="text-nowrap">@SaasDisplay.DateTimeShort(entry.At)</td>
-                                            <td class="text-nowrap">@entry.Actor</td>
-                                            <th scope="row" class="fw-semibold text-nowrap">@entry.Action</th>
-                                            <td class="sd-invoice-detail">@entry.Details</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                        <Table Data="history" Class="align-middle" Responsive="true" TableContainerClass="sd-grid" RowKeySelector="entry => entry.Id"
+                               Caption="@($"History of invoice {invoice.Number}, newest first")" VisuallyHiddenCaption="true">
+                            <TableColumn HeaderText="Time" ColumnClass="@(_ => "text-nowrap")" Context="entry">@SaasDisplay.DateTimeShort(entry.At)</TableColumn>
+                            <TableColumn HeaderText="By" ColumnClass="@(_ => "text-nowrap")" Context="entry">@entry.Actor</TableColumn>
+                            <TableColumn HeaderText="Action" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold text-nowrap")" Context="entry">@entry.Action</TableColumn>
+                            <TableColumn HeaderText="Detail" ColumnClass="@(_ => "sd-invoice-detail")" Context="entry">@entry.Details</TableColumn>
+                        </Table>
                     }
                 </CardBody>
             </Card>

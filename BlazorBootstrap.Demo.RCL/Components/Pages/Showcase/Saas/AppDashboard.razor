@@ -141,24 +141,10 @@
                 <div class="position-relative overflow-hidden">
                     @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
                     <div class="visually-hidden">
-                    <table>
-                        <caption>Sessions over @RangeDescription</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">@(range == SaasAnalyticsRange.Last90Days ? "Week of" : range == SaasAnalyticsRange.Last12Months ? "Month" : "Day")</th>
-                                <th scope="col">Sessions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var point in snapshot.Sessions)
-                            {
-                                <tr>
-                                    <th scope="row">@point.Label</th>
-                                    <td>@Count(point.Value)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                    <Table Data="snapshot.Sessions" Caption="@($"Sessions over {RangeDescription}")">
+                        <TableColumn HeaderText="@(range == SaasAnalyticsRange.Last90Days ? "Week of" : range == SaasAnalyticsRange.Last12Months ? "Month" : "Day")" IsRowHeader="true" Context="point">@point.Label</TableColumn>
+                        <TableColumn HeaderText="Sessions" Context="point">@Count(point.Value)</TableColumn>
+                    </Table>
                     </div>
                 </div>
             }

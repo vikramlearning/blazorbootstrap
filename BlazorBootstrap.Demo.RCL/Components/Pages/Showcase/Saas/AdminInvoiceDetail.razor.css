@@ -25,6 +25,6 @@
 }
 
 /* Keeps the audit detail readable when the history table scrolls sideways on a phone. */
-.sd-invoice-detail {
+::deep .sd-invoice-detail {
     min-width: 16rem;
 }
