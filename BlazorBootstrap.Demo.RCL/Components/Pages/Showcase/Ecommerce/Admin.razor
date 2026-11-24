@@ -52,32 +52,14 @@
             }
             else
             {
-                <div class="table-responsive">
-                    <table class="table ea-table align-middle">
-                        <caption class="visually-hidden">The six most recent orders</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Order</th>
-                                <th scope="col">Placed</th>
-                                <th scope="col">Customer</th>
-                                <th scope="col">Status</th>
-                                <th scope="col" class="text-end">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var order in RecentOrders)
-                            {
-                                <tr @key="order.Id">
-                                    <th scope="row"><a href="@($"{EcommerceAdminLayout.Base}/orders/{order.Id}")">#@order.Id</a></th>
-                                    <td>@EcommerceDisplay.DateTimeShort(order.PlacedOn)</td>
-                                    <td>@order.ShipTo.FullName</td>
-                                    <td><Badge Color="EcommerceDisplay.StatusColor(order.Status)">@order.Status</Badge></td>
-                                    <td class="text-end">@EcommerceDisplay.Money(order.Totals.Total)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <Table Data="RecentOrders" Class="ea-table align-middle" Responsive="true" RowKeySelector="order => order.Id"
+                       Caption="The six most recent orders" VisuallyHiddenCaption="true">
+                    <TableColumn HeaderText="Order" IsRowHeader="true" Context="order"><a href="@($"{EcommerceAdminLayout.Base}/orders/{order.Id}")">#@order.Id</a></TableColumn>
+                    <TableColumn HeaderText="Placed" Context="order">@EcommerceDisplay.DateTimeShort(order.PlacedOn)</TableColumn>
+                    <TableColumn HeaderText="Customer" Context="order">@order.ShipTo.FullName</TableColumn>
+                    <TableColumn HeaderText="Status" Context="order"><Badge Color="EcommerceDisplay.StatusColor(order.Status)">@order.Status</Badge></TableColumn>
+                    <TableColumn HeaderText="Total" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="order">@EcommerceDisplay.Money(order.Totals.Total)</TableColumn>
+                </Table>
             }
         </section>
     </div>

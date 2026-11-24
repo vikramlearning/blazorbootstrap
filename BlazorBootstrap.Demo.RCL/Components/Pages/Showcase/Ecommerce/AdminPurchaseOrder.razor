@@ -67,57 +67,41 @@
                             else
                             {
                                 @* Line items being edited: a plain table with one row of inputs per product. *@
-                                <div class="table-responsive">
-                                    <table class="table ea-table align-middle ea-po-lines">
-                                        <caption class="visually-hidden">Products on @order.Number, with quantity and unit cost</caption>
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Product</th>
-                                                <th scope="col" class="ea-po-number-col">Quantity</th>
-                                                <th scope="col" class="ea-po-number-col">Unit cost (@(currency ?? "USD"))</th>
-                                                <th scope="col" class="text-end">Line total</th>
-                                                <th scope="col"><span class="visually-hidden">Remove</span></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var line in form.Lines)
-                                            {
-                                                var row = line;
-                                                var quantityId = $"ea-po-qty-{row.ProductId}";
-                                                var costId = $"ea-po-cost-{row.ProductId}";
-                                                <tr @key="row.ProductId">
-                                                    <th scope="row" class="fw-normal">
-                                                        <span class="d-block fw-semibold">@row.Name</span>
-                                                        <span class="small text-body-secondary">@row.Hint</span>
-                                                    </th>
-                                                    <td>
-                                                        <label class="visually-hidden" for="@quantityId">Quantity of @row.Name</label>
-                                                        <NumberInput TValue="int?" Id="@quantityId" @bind-Value="row.Quantity" Step="1" />
-                                                        <ValidationMessage For="() => row.Quantity" />
-                                                    </td>
-                                                    <td>
-                                                        <label class="visually-hidden" for="@costId">Unit cost of @row.Name</label>
-                                                        <NumberInput TValue="decimal?" Id="@costId" @bind-Value="row.UnitCost" Step="0.01" />
-                                                        <ValidationMessage For="() => row.UnitCost" />
-                                                    </td>
-                                                    <td class="text-end text-nowrap">@(row.Quantity is { } quantity && row.UnitCost is { } cost ? EcommerceSeedData.MoneyIn(quantity * cost, currency) : "—")</td>
-                                                    <td class="text-end">
-                                                        <Button Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => RemoveLine(row)">
-                                                            <Icon Name="IconName.Trash3" aria-hidden="true" /><span class="visually-hidden">Remove @row.Name</span>
-                                                        </Button>
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <th scope="row" colspan="3" class="text-end">Total</th>
-                                                <td class="text-end fw-semibold text-nowrap">@EcommerceSeedData.MoneyIn(form.Lines.Sum(line => (line.Quantity ?? 0) * (line.UnitCost ?? 0)), currency)</td>
-                                                <td></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
+                                <Table Data="form.Lines" Class="ea-table align-middle ea-po-lines" Responsive="true" RowKeySelector="row => row.ProductId"
+                                       Caption="@($"Products on {order.Number}, with quantity and unit cost")" VisuallyHiddenCaption="true">
+                                    <ChildContent>
+                                        <TableColumn HeaderText="Product" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="row">
+                                            <span class="d-block fw-semibold">@row.Name</span>
+                                            <span class="small text-body-secondary">@row.Hint</span>
+                                        </TableColumn>
+                                        <TableColumn HeaderText="Quantity" HeaderClass="ea-po-number-col" Context="row">
+                                            <label class="visually-hidden" for="@($"ea-po-qty-{row.ProductId}")">Quantity of @row.Name</label>
+                                            <NumberInput TValue="int?" Id="@($"ea-po-qty-{row.ProductId}")" @bind-Value="row.Quantity" Step="1" />
+                                            <ValidationMessage For="() => row.Quantity" />
+                                        </TableColumn>
+                                        <TableColumn HeaderText="@($"Unit cost ({currency ?? "USD"})")" HeaderClass="ea-po-number-col" Context="row">
+                                            <label class="visually-hidden" for="@($"ea-po-cost-{row.ProductId}")">Unit cost of @row.Name</label>
+                                            <NumberInput TValue="decimal?" Id="@($"ea-po-cost-{row.ProductId}")" @bind-Value="row.UnitCost" Step="0.01" />
+                                            <ValidationMessage For="() => row.UnitCost" />
+                                        </TableColumn>
+                                        <TableColumn HeaderText="Line total" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="row">@(row.Quantity is { } quantity && row.UnitCost is { } cost ? EcommerceSeedData.MoneyIn(quantity * cost, currency) : "—")</TableColumn>
+                                        <TableColumn TextAlignment="Alignment.End" Context="row">
+                                            <HeaderContent><span class="visually-hidden">Remove</span></HeaderContent>
+                                            <ChildContent>
+                                                <Button Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => RemoveLine(row)">
+                                                    <Icon Name="IconName.Trash3" aria-hidden="true" /><span class="visually-hidden">Remove @row.Name</span>
+                                                </Button>
+                                            </ChildContent>
+                                        </TableColumn>
+                                    </ChildContent>
+                                    <FooterTemplate>
+                                        <tr>
+                                            <th scope="row" colspan="3" class="text-end">Total</th>
+                                            <td class="text-end fw-semibold text-nowrap">@EcommerceSeedData.MoneyIn(form.Lines.Sum(line => (line.Quantity ?? 0) * (line.UnitCost ?? 0)), currency)</td>
+                                            <td></td>
+                                        </tr>
+                                    </FooterTemplate>
+                                </Table>
                             }
 
                             <div class="row g-2 align-items-end mb-3">
@@ -167,46 +151,28 @@
                     <section class="ea-panel" aria-labelledby="ea-po-lines-title">
                         <h2 class="ea-section-title" id="ea-po-lines-title">Lines</h2>
                         @* The order's lines: a line-item table, so a plain table. *@
-                        <div class="table-responsive">
-                            <table class="table ea-table align-middle">
-                                <caption class="visually-hidden">Products on @order.Number: ordered, received, and outstanding</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Product</th>
-                                        <th scope="col">Supplier SKU</th>
-                                        <th scope="col" class="text-end">Ordered</th>
-                                        <th scope="col" class="text-end">Received</th>
-                                        <th scope="col" class="text-end">Outstanding</th>
-                                        <th scope="col" class="text-end">Unit cost</th>
-                                        <th scope="col" class="text-end">Line total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var line in order.Lines)
-                                    {
-                                        <tr @key="line.ProductId">
-                                            <th scope="row" class="fw-normal"><a href="@EcommerceSeedData.AdminProductPath(line.ProductId)">@line.Name</a></th>
-                                            <td class="ea-mono">@(line.SupplierSku ?? "—")</td>
-                                            <td class="text-end">@line.Quantity</td>
-                                            <td class="text-end">@line.Received</td>
-                                            <td class="text-end">@line.Outstanding</td>
-                                            <td class="text-end text-nowrap">@EcommerceSeedData.MoneyIn(line.UnitCost, currency)</td>
-                                            <td class="text-end text-nowrap">@EcommerceSeedData.MoneyIn(line.Total, currency)</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th scope="row" colspan="2" class="text-end">Total</th>
-                                        <td class="text-end fw-semibold">@order.Units</td>
-                                        <td class="text-end fw-semibold">@order.UnitsReceived</td>
-                                        <td class="text-end fw-semibold">@(order.Units - order.UnitsReceived)</td>
-                                        <td></td>
-                                        <td class="text-end fw-semibold text-nowrap">@State.MoneyIn(order)</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+                        <Table Data="order.Lines" Class="ea-table align-middle" Responsive="true" RowKeySelector="line => line.ProductId"
+                               Caption="@($"Products on {order.Number}: ordered, received, and outstanding")" VisuallyHiddenCaption="true">
+                            <ChildContent>
+                                <TableColumn HeaderText="Product" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="line"><a href="@EcommerceSeedData.AdminProductPath(line.ProductId)">@line.Name</a></TableColumn>
+                                <TableColumn HeaderText="Supplier SKU" ColumnClass="@(_ => "ea-mono")" Context="line">@(line.SupplierSku ?? "—")</TableColumn>
+                                <TableColumn HeaderText="Ordered" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Quantity</TableColumn>
+                                <TableColumn HeaderText="Received" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Received</TableColumn>
+                                <TableColumn HeaderText="Outstanding" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Outstanding</TableColumn>
+                                <TableColumn HeaderText="Unit cost" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="line">@EcommerceSeedData.MoneyIn(line.UnitCost, currency)</TableColumn>
+                                <TableColumn HeaderText="Line total" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="line">@EcommerceSeedData.MoneyIn(line.Total, currency)</TableColumn>
+                            </ChildContent>
+                            <FooterTemplate>
+                                <tr>
+                                    <th scope="row" colspan="2" class="text-end">Total</th>
+                                    <td class="text-end fw-semibold">@order.Units</td>
+                                    <td class="text-end fw-semibold">@order.UnitsReceived</td>
+                                    <td class="text-end fw-semibold">@(order.Units - order.UnitsReceived)</td>
+                                    <td></td>
+                                    <td class="text-end fw-semibold text-nowrap">@State.MoneyIn(order)</td>
+                                </tr>
+                            </FooterTemplate>
+                        </Table>
                         @if (order.Note is { } note)
                         {
                             <p class="small mb-0"><span class="fw-semibold">Note for the supplier:</span> @note</p>
@@ -224,34 +190,16 @@
                         <EditForm EditContext="receiveContext" OnSubmit="Receive" FormName="ea-po-receive" novalidate>
                             <DataAnnotationsValidator />
                             <ShowcaseFormErrors ShowSummary="true" />
-                            <div class="table-responsive">
-                                <table class="table ea-table align-middle ea-po-lines">
-                                    <caption class="visually-hidden">Quantities received now on @order.Number</caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Product</th>
-                                            <th scope="col" class="text-end">Outstanding</th>
-                                            <th scope="col" class="ea-po-number-col">Received now</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var line in receiveForm.Lines)
-                                        {
-                                            var row = line;
-                                            var inputId = $"ea-po-receive-{row.ProductId}";
-                                            <tr @key="row.ProductId">
-                                                <th scope="row" class="fw-normal">@row.Name</th>
-                                                <td class="text-end">@row.Outstanding</td>
-                                                <td>
-                                                    <label class="visually-hidden" for="@inputId">Received now of @row.Name, up to @row.Outstanding</label>
-                                                    <NumberInput TValue="int?" Id="@inputId" @bind-Value="row.Quantity" Step="1" Placeholder="0" />
-                                                    <ValidationMessage For="() => row.Quantity" />
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            <Table Data="receiveForm.Lines" Class="ea-table align-middle ea-po-lines" Responsive="true" RowKeySelector="row => row.ProductId"
+                                   Caption="@($"Quantities received now on {order.Number}")" VisuallyHiddenCaption="true">
+                                <TableColumn HeaderText="Product" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="row">@row.Name</TableColumn>
+                                <TableColumn HeaderText="Outstanding" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@row.Outstanding</TableColumn>
+                                <TableColumn HeaderText="Received now" HeaderClass="ea-po-number-col" Context="row">
+                                    <label class="visually-hidden" for="@($"ea-po-receive-{row.ProductId}")">Received now of @row.Name, up to @row.Outstanding</label>
+                                    <NumberInput TValue="int?" Id="@($"ea-po-receive-{row.ProductId}")" @bind-Value="row.Quantity" Step="1" Placeholder="0" />
+                                    <ValidationMessage For="() => row.Quantity" />
+                                </TableColumn>
+                            </Table>
                             <div class="mb-3">
                                 <label class="form-label" for="ea-po-receive-note">Note (optional)</label>
                                 <InputText id="ea-po-receive-note" class="form-control" @bind-Value="receiveForm.Note" maxlength="@EcommerceState.MaxPurchaseOrderNoteLength" aria-describedby="ea-po-receive-note-help" />

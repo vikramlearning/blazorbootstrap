@@ -214,31 +214,16 @@
         }
         <p class="small text-body-secondary">Reason: @bulkForm.Reason.Trim(). Shoppers see the new prices right away; placed orders keep the prices customers paid.</p>
         @* A preview of the changes: line items, so a plain table. *@
-        <div class="table-responsive ea-preview">
-            <table class="table ea-table align-middle mb-0">
-                <caption class="visually-hidden">Prices before and after the change, one row per product that changes</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Product</th>
-                        <th scope="col" class="text-end">Current price</th>
-                        <th scope="col" class="text-end">New price</th>
-                        <th scope="col" class="text-end">Current compare-at</th>
-                        <th scope="col" class="text-end">New compare-at</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var change in pendingChanges)
-                    {
-                        <tr @key="change.Id">
-                            <th scope="row" class="fw-semibold">@change.Name</th>
-                            <td class="text-end">@EcommerceDisplay.Money(change.OldPrice)</td>
-                            <td class="text-end fw-semibold">@EcommerceDisplay.Money(change.NewPrice)</td>
-                            <td class="text-end">@MoneyOrNone(change.OldCompareAt)</td>
-                            <td class="text-end fw-semibold">@MoneyOrNone(change.NewCompareAt)</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        @* The host is rendered by this page, so its scoped styles reach the scroll box and head that Table renders. *@
+        <div class="ea-preview-host">
+            <Table Data="pendingChanges" Class="ea-table align-middle mb-0" Responsive="true" TableContainerClass="ea-preview" RowKeySelector="change => change.Id"
+                   Caption="Prices before and after the change, one row per product that changes" VisuallyHiddenCaption="true">
+                <TableColumn HeaderText="Product" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold")" Context="change">@change.Name</TableColumn>
+                <TableColumn HeaderText="Current price" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="change">@EcommerceDisplay.Money(change.OldPrice)</TableColumn>
+                <TableColumn HeaderText="New price" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "fw-semibold")" Context="change">@EcommerceDisplay.Money(change.NewPrice)</TableColumn>
+                <TableColumn HeaderText="Current compare-at" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="change">@MoneyOrNone(change.OldCompareAt)</TableColumn>
+                <TableColumn HeaderText="New compare-at" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "fw-semibold")" Context="change">@MoneyOrNone(change.NewCompareAt)</TableColumn>
+            </Table>
         </div>
     </BodyTemplate>
     <FooterTemplate>

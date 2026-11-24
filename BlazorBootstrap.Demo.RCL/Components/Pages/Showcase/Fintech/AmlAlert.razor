@@ -53,32 +53,14 @@
                     }
                     else
                     {
-                        <div class="table-responsive">
-                            <table class="table align-middle mb-0">
-                                <caption class="caption-top small">The transfers the rule looked at, newest first.</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Reference</th>
-                                        <th scope="col">Date</th>
-                                        <th scope="col">To</th>
-                                        <th scope="col" class="text-end">Amount</th>
-                                        <th scope="col">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var transfer in Triggers)
-                                    {
-                                        <tr @key="transfer.Reference">
-                                            <th scope="row" class="fw-normal"><a class="tm-mono" href="@OpsQueue.TransferUrl(transfer.Reference)">@transfer.Reference</a></th>
-                                            <td class="text-nowrap small">@Transfers.DateText(transfer.Date)</td>
-                                            <td>@transfer.ToName</td>
-                                            <td class="text-end tm-mono text-nowrap">@FintechDisplay.Money(transfer.Amount)</td>
-                                            <td><Badge Color="Transfers.StatusColor(transfer.Status)">@OpsTransfer.StatusText(transfer.Status)</Badge></td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                        <Table Data="Triggers" Class="align-middle mb-0" Responsive="true" RowKeySelector="transfer => transfer.Reference"
+                               Caption="The transfers the rule looked at, newest first." CaptionClass="caption-top small">
+                            <TableColumn HeaderText="Reference" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="transfer"><a class="tm-mono" href="@OpsQueue.TransferUrl(transfer.Reference)">@transfer.Reference</a></TableColumn>
+                            <TableColumn HeaderText="Date" ColumnClass="@(_ => "text-nowrap small")" Context="transfer">@Transfers.DateText(transfer.Date)</TableColumn>
+                            <TableColumn HeaderText="To" Context="transfer">@transfer.ToName</TableColumn>
+                            <TableColumn HeaderText="Amount" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tm-mono text-nowrap")" Context="transfer">@FintechDisplay.Money(transfer.Amount)</TableColumn>
+                            <TableColumn HeaderText="Status" Context="transfer"><Badge Color="Transfers.StatusColor(transfer.Status)">@OpsTransfer.StatusText(transfer.Status)</Badge></TableColumn>
+                        </Table>
                     }
                 </section>
 

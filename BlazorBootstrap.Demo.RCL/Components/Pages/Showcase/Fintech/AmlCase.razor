@@ -125,41 +125,23 @@
                 @* The alerts are line items of the case, so they stay a plain table. *@
                 <section class="tm-panel" aria-labelledby="tm-ca-alerts-title">
                     <h2 class="tm-section-title" id="tm-ca-alerts-title">Linked alerts</h2>
-                    <div class="table-responsive">
-                        <table class="table align-middle mb-0">
-                            <caption class="caption-top small">The alerts this case was opened from, with the transfers that triggered them.</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Alert</th>
-                                    <th scope="col">Rule</th>
-                                    <th scope="col">Risk</th>
-                                    <th scope="col">Raised</th>
-                                    <th scope="col">Transfers</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var alert in LinkedAlerts)
-                                {
-                                    <tr @key="alert.Id">
-                                        <th scope="row" class="fw-normal"><a class="tm-mono" href="@AmlDisplay.AlertPath(alert.Id)">@alert.Id</a></th>
-                                        <td>@FintechSeedData.RuleName(alert.Rule)<span class="d-block small text-body-secondary">@alert.Summary</span></td>
-                                        <td class="text-nowrap"><Badge Color="AmlDisplay.RiskColor(alert.Risk)">@AmlDisplay.RiskText(alert.Risk)</Badge></td>
-                                        <td class="small text-nowrap">@Disputes.DayText(alert.CreatedAt)</td>
-                                        <td class="small">
-                                            @if (alert.TransferReferences.Count == 0)
-                                            {
-                                                <span class="text-body-secondary">None kept</span>
-                                            }
-                                            @foreach (var reference in alert.TransferReferences)
-                                            {
-                                                <a class="d-block tm-mono" href="@OpsQueue.TransferUrl(reference)">@reference</a>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="LinkedAlerts" Class="align-middle mb-0" Responsive="true" RowKeySelector="alert => alert.Id"
+                           Caption="The alerts this case was opened from, with the transfers that triggered them." CaptionClass="caption-top small">
+                        <TableColumn HeaderText="Alert" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="alert"><a class="tm-mono" href="@AmlDisplay.AlertPath(alert.Id)">@alert.Id</a></TableColumn>
+                        <TableColumn HeaderText="Rule" Context="alert">@FintechSeedData.RuleName(alert.Rule)<span class="d-block small text-body-secondary">@alert.Summary</span></TableColumn>
+                        <TableColumn HeaderText="Risk" ColumnClass="@(_ => "text-nowrap")" Context="alert"><Badge Color="AmlDisplay.RiskColor(alert.Risk)">@AmlDisplay.RiskText(alert.Risk)</Badge></TableColumn>
+                        <TableColumn HeaderText="Raised" ColumnClass="@(_ => "small text-nowrap")" Context="alert">@Disputes.DayText(alert.CreatedAt)</TableColumn>
+                        <TableColumn HeaderText="Transfers" ColumnClass="@(_ => "small")" Context="alert">
+                            @if (alert.TransferReferences.Count == 0)
+                            {
+                                <span class="text-body-secondary">None kept</span>
+                            }
+                            @foreach (var reference in alert.TransferReferences)
+                            {
+                                <a class="d-block tm-mono" href="@OpsQueue.TransferUrl(reference)">@reference</a>
+                            }
+                        </TableColumn>
+                    </Table>
                 </section>
             </div>
 

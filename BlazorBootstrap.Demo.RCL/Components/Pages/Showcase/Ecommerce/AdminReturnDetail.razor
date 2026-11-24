@@ -100,38 +100,22 @@
                 <section class="ea-panel" aria-labelledby="ea-return-items-title">
                     <h2 class="ea-section-title" id="ea-return-items-title">Items</h2>
                     @* The return's lines: a line-item table, so a plain table. *@
-                    <div class="table-responsive">
-                        <table class="table ea-table align-middle">
-                            <caption class="visually-hidden">Items in return @EcommerceDisplay.ReturnNumber(item.Id)</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Item</th>
-                                    <th scope="col">Color</th>
-                                    <th scope="col" class="text-end">Qty</th>
-                                    <th scope="col" class="text-end">Unit price</th>
-                                    <th scope="col" class="text-end">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var line in item.Lines)
-                                {
-                                    <tr @key="(line.ProductId, line.Color)">
-                                        <td><a href="@EcommerceSeedData.AdminProductPath(line.ProductId)">@line.Name</a></td>
-                                        <td>@line.Color</td>
-                                        <td class="text-end">@line.Quantity</td>
-                                        <td class="text-end">@EcommerceDisplay.Money(line.UnitPrice)</td>
-                                        <td class="text-end">@EcommerceDisplay.Money(line.UnitPrice * line.Quantity)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th scope="row" colspan="4" class="text-end">Total</th>
-                                    <td class="text-end fw-semibold">@EcommerceDisplay.Money(item.Amount)</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                    <Table Data="item.Lines" Class="ea-table align-middle" Responsive="true" RowKeySelector="line => (line.ProductId, line.Color)"
+                           Caption="@($"Items in return {EcommerceDisplay.ReturnNumber(item.Id)}")" VisuallyHiddenCaption="true">
+                        <ChildContent>
+                            <TableColumn HeaderText="Item" Context="line"><a href="@EcommerceSeedData.AdminProductPath(line.ProductId)">@line.Name</a></TableColumn>
+                            <TableColumn HeaderText="Color" Context="line">@line.Color</TableColumn>
+                            <TableColumn HeaderText="Qty" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Quantity</TableColumn>
+                            <TableColumn HeaderText="Unit price" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@EcommerceDisplay.Money(line.UnitPrice)</TableColumn>
+                            <TableColumn HeaderText="Amount" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@EcommerceDisplay.Money(line.UnitPrice * line.Quantity)</TableColumn>
+                        </ChildContent>
+                        <FooterTemplate>
+                            <tr>
+                                <th scope="row" colspan="4" class="text-end">Total</th>
+                                <td class="text-end fw-semibold">@EcommerceDisplay.Money(item.Amount)</td>
+                            </tr>
+                        </FooterTemplate>
+                    </Table>
                 </section>
             </div>
 
