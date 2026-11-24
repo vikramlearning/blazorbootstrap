@@ -75,6 +75,7 @@ public static class SeoRoutes
         ["/docs/sortable-list"] = "/components/sortable-list",
         ["/docs/spinners"] = "/components/spinners",
         ["/docs/split-view"] = "/components/split-view",
+        ["/docs/table"] = "/components/table",
         ["/docs/tabs"] = "/components/tabs",
         ["/docs/theme-switcher"] = "/components/theme-switcher",
         ["/docs/timeline"] = "/components/timeline",

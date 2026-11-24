@@ -73,6 +73,7 @@ public partial class DocsMainLayout : MainLayoutBase
             new (){ Id = "525", Text = "Sortable List", Href = DemoRouteConstants.Docs_URL_SortableList, IconName = IconName.ArrowsMove, ParentId = "5" },
             new (){ Id = "526", Text = "Spinner", Href = DemoRouteConstants.Docs_URL_Spinners, IconName = IconName.ArrowRepeat, ParentId = "5" },
             new (){ Id = "5245", Text = "Split View", Href = DemoRouteConstants.Docs_URL_SplitView, IconName = IconName.LayoutSplit, ParentId = "5" },
+            new (){ Id = "5265", Text = "Table", Href = DemoRouteConstants.Docs_URL_Table, IconName = IconName.Table, ParentId = "5" },
             new (){ Id = "527", Text = "Tabs", Href = DemoRouteConstants.Docs_URL_Tabs, IconName = IconName.WindowPlus, ParentId = "5" },
             new (){ Id = "528", Text = "Theme Switcher", Href = DemoRouteConstants.Docs_URL_ThemeSwitcher, IconName = IconName.NintendoSwitch, ParentId = "5" },
             new (){ Id = "5285", Text = "Timeline", Href = DemoRouteConstants.Docs_URL_Timeline, IconName = IconName.ClockHistory, ParentId = "5" },

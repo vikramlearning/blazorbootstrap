@@ -237,6 +237,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_Spinners = Docs_URL_Prefix + "/spinners";
     public const string Docs_URL_Tabs = Docs_URL_Prefix + "/tabs";
     public const string Docs_URL_ThemeSwitcher = Docs_URL_Prefix + "/theme-switcher";
+    public const string Docs_URL_Table = Docs_URL_Prefix + "/table";
     public const string Docs_URL_Timeline = Docs_URL_Prefix + "/timeline";
     public const string Docs_URL_Toasts = Docs_URL_Prefix + "/toasts";
     public const string Docs_URL_Tooltips = Docs_URL_Prefix + "/tooltips";

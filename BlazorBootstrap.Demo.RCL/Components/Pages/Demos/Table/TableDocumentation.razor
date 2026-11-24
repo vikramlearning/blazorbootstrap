@@ -8,6 +8,8 @@
                       MetaDescription="@metaDescription"
                       ImageUrl="@imageUrl" />
 
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Table" />
+
 <Callout Color="CalloutColor.Info">
     <b>Table</b> renders a read-only Bootstrap 5.3 table from a list, one row per item, with columns declared as <code>TableColumn</code> children.
     It is the lightweight sibling of <a href="@DemoRouteConstants.Demos_URL_Grid_Overview">Grid</a>: use <b>Grid</b> when you need paging, sorting, filtering, selection, or a data provider.
@@ -290,6 +292,21 @@
         </div>
     </div>
     <Demo Type="typeof(Table_Demo_18_Column_Visibility)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Row index" PageUrl="@pageUrl" Link="row-index">
+    <div class="mb-3">
+        A column's content receives the row item only. To show a rank or a row number, pair each item with its index in <code>Data</code>.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Data="items.Select((item, index) =&gt; (item, index))"</code> and <code>TItem</code> to the tuple type.</li>
+                <li>Read <code>@@context.Index</code> and <code>@@context.Item</code> (or your own names) in the columns.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_19_Row_Index)" Tabs="true" />
 </Section>
 
 @code {
