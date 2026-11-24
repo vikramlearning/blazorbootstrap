@@ -150,29 +150,36 @@
                 {
                     <section class="ea-panel" aria-labelledby="ea-po-lines-title">
                         <h2 class="ea-section-title" id="ea-po-lines-title">Lines</h2>
-                        @* The order's lines: a line-item table, so a plain table. *@
-                        <Table Data="order.Lines" Class="ea-table align-middle" Responsive="true" RowKeySelector="line => line.ProductId"
-                               Caption="@($"Products on {order.Number}: ordered, received, and outstanding")" VisuallyHiddenCaption="true">
-                            <ChildContent>
-                                <TableColumn HeaderText="Product" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="line"><a href="@EcommerceSeedData.AdminProductPath(line.ProductId)">@line.Name</a></TableColumn>
-                                <TableColumn HeaderText="Supplier SKU" ColumnClass="@(_ => "ea-mono")" Context="line">@(line.SupplierSku ?? "—")</TableColumn>
-                                <TableColumn HeaderText="Ordered" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Quantity</TableColumn>
-                                <TableColumn HeaderText="Received" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Received</TableColumn>
-                                <TableColumn HeaderText="Outstanding" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Outstanding</TableColumn>
-                                <TableColumn HeaderText="Unit cost" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="line">@EcommerceSeedData.MoneyIn(line.UnitCost, currency)</TableColumn>
-                                <TableColumn HeaderText="Line total" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="line">@EcommerceSeedData.MoneyIn(line.Total, currency)</TableColumn>
-                            </ChildContent>
-                            <FooterTemplate>
-                                <tr>
-                                    <th scope="row" colspan="2" class="text-end">Total</th>
-                                    <td class="text-end fw-semibold">@order.Units</td>
-                                    <td class="text-end fw-semibold">@order.UnitsReceived</td>
-                                    <td class="text-end fw-semibold">@(order.Units - order.UnitsReceived)</td>
-                                    <td></td>
-                                    <td class="text-end fw-semibold text-nowrap">@State.MoneyIn(order)</td>
-                                </tr>
-                            </FooterTemplate>
-                        </Table>
+                        @if (order.Lines.Count == 0)
+                        {
+                            <p class="ea-empty">This order has no lines.</p>
+                        }
+                        else
+                        {
+                            @* The order's lines: a line-item table, so a plain table. *@
+                            <Table Data="order.Lines" Class="ea-table align-middle" Responsive="true" RowKeySelector="line => line.ProductId"
+                                   Caption="@($"Products on {order.Number}: ordered, received, and outstanding")" VisuallyHiddenCaption="true">
+                                <ChildContent>
+                                    <TableColumn HeaderText="Product" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="line"><a href="@EcommerceSeedData.AdminProductPath(line.ProductId)">@line.Name</a></TableColumn>
+                                    <TableColumn HeaderText="Supplier SKU" ColumnClass="@(_ => "ea-mono")" Context="line">@(line.SupplierSku ?? "—")</TableColumn>
+                                    <TableColumn HeaderText="Ordered" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Quantity</TableColumn>
+                                    <TableColumn HeaderText="Received" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Received</TableColumn>
+                                    <TableColumn HeaderText="Outstanding" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Outstanding</TableColumn>
+                                    <TableColumn HeaderText="Unit cost" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="line">@EcommerceSeedData.MoneyIn(line.UnitCost, currency)</TableColumn>
+                                    <TableColumn HeaderText="Line total" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="line">@EcommerceSeedData.MoneyIn(line.Total, currency)</TableColumn>
+                                </ChildContent>
+                                <FooterTemplate>
+                                    <tr>
+                                        <th scope="row" colspan="2" class="text-end">Total</th>
+                                        <td class="text-end fw-semibold">@order.Units</td>
+                                        <td class="text-end fw-semibold">@order.UnitsReceived</td>
+                                        <td class="text-end fw-semibold">@(order.Units - order.UnitsReceived)</td>
+                                        <td></td>
+                                        <td class="text-end fw-semibold text-nowrap">@State.MoneyIn(order)</td>
+                                    </tr>
+                                </FooterTemplate>
+                            </Table>
+                        }
                         @if (order.Note is { } note)
                         {
                             <p class="small mb-0"><span class="fw-semibold">Note for the supplier:</span> @note</p>
