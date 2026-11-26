@@ -472,4 +472,4 @@ Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com
 
 ## Copyright and license
 
-Code and documentation copyright 2026 [Blazor Bootstrap](https://docs.blazorbootstrap.com/) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt).
+© 2024–2026 Vikram Reddy and contributors. Licensed under the [Apache License 2.0](https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt).

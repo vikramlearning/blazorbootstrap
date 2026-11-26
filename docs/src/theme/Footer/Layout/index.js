@@ -45,12 +45,12 @@ export default function FooterLayout({style, links, logo, copyright}) {
         </div>
         <div className={styles.bottom}>
           {copyright}
-          <span className={styles.separator} aria-hidden="true">·</span>
           <span>
-            Code licensed{' '}
+            Licensed under the{' '}
             <Link href="https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt" rel="license noopener noreferrer">
               Apache License 2.0
             </Link>
+            .
           </span>
         </div>
       </div>

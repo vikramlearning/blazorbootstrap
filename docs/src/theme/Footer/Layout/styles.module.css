@@ -54,7 +54,3 @@
 .bottom :global(.footer__copyright) {
   text-align: left;
 }
-
-.separator {
-  color: inherit;
-}

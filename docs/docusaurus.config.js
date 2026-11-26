@@ -144,7 +144,7 @@ const config = {
                         ],
                     },
                 ],
-                copyright: `© ${new Date().getFullYear()} Blazor Bootstrap`,
+                copyright: '© 2024–2026 Vikram Reddy and contributors.',
             },
             prism: {
                 theme: lightCodeTheme,
