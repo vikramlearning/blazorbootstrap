@@ -2,19 +2,23 @@
 @inherits ComponentBase
 
 <section class="bd-more-libraries bg-body-secondary border-top py-5" aria-labelledby="bd-more-libraries-heading">
-    <div class="container px-4 px-md-3">
-        <h2 id="bd-more-libraries-heading" class="h4 text-center mb-1">More libraries from the team</h2>
-        <p class="text-body-secondary text-center mb-4">Free, open-source .NET libraries built by the same team.</p>
-        <div class="row row-cols-1 row-cols-md-3 g-3">
+    <div class="container-xxl bd-gutter">
+        <h2 id="bd-more-libraries-heading" class="h4 fw-semibold mb-1">More libraries from the team</h2>
+        <p class="text-body-secondary mb-4">Free, open-source .NET libraries built by the same team.</p>
+        @* One card per row on phones and tablets (laid out as a single line from 768px), three across from 992px. *@
+        <div class="row row-cols-1 row-cols-lg-3 g-3">
             @foreach (var library in libraries)
             {
                 <div class="col">
                     <div class="card h-100">
-                        <div class="card-body d-flex flex-column gap-2">
-                            <img class="bd-lib-logo" src="@library.LogoUrl" width="48" height="48" alt="" />
-                            <h3 class="h6 fw-semibold mb-0">@library.Name</h3>
-                            <p class="small text-body-secondary flex-grow-1 mb-1">@library.Description</p>
-                            <div class="d-flex flex-wrap gap-2">
+                        <div class="bd-lib-body card-body d-flex flex-column flex-md-row flex-lg-column gap-2 gap-md-4 gap-lg-2 align-items-md-center align-items-lg-stretch">
+                            @* Logo beside the name keeps each card short. *@
+                            <div class="bd-lib-head d-flex align-items-center gap-3">
+                                <img class="bd-lib-logo" src="@library.LogoUrl" width="48" height="48" alt="" />
+                                <h3 class="h6 fw-semibold mb-0">@library.Name</h3>
+                            </div>
+                            <p class="small text-body-secondary flex-grow-1 mb-1 mb-md-0 mb-lg-1">@library.Description</p>
+                            <div class="bd-lib-links d-flex flex-wrap flex-md-nowrap flex-lg-wrap">
                                 <a class="btn btn-sm btn-outline-primary" href="@library.WebsiteUrl" target="_blank" rel="noopener">Website<span class="visually-hidden"> for @library.Name</span></a>
                                 <a class="btn btn-sm btn-outline-secondary" href="@library.GithubUrl" target="_blank" rel="noopener">GitHub<span class="visually-hidden"> for @library.Name</span></a>
                                 <a class="btn btn-sm btn-outline-secondary" href="@library.NugetUrl" target="_blank" rel="noopener">NuGet<span class="visually-hidden"> for @library.Name</span></a>

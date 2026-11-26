@@ -32,10 +32,19 @@
                 </button>
                 <span class="visually-hidden" role="status">@copyStatus</span>
             </div>
-            <p class="mt-3 mb-0">Currently <strong>@version</strong></p>
+            @* After installing, the next step depends on the project type, so each guide is one click away. *@
+            <nav class="mt-3" aria-labelledby="home-guides-label">
+                <p class="small text-body-secondary mb-2" id="home-guides-label">Then follow the setup guide for your project</p>
+                <ul class="bd-home-guides list-unstyled d-flex flex-wrap justify-content-center gap-2 mb-0">
+                    @foreach (var guide in setupGuides)
+                    {
+                        <li><a class="bd-home-guide d-inline-block px-3 py-1 rounded-pill text-decoration-none" href="@guide.Url">@guide.Name</a></li>
+                    }
+                </ul>
+            </nav>
             @if (stats.Count > 0)
             {
-                <dl class="bd-home-stats d-flex flex-wrap justify-content-center gap-3 mt-4 mb-0">
+                <dl class="bd-home-stats d-flex justify-content-center gap-2 gap-sm-3 mt-4 mb-0">
                     @foreach (var stat in stats)
                     {
                         <div class="position-relative d-flex flex-column-reverse px-3 py-2 rounded-3">
@@ -64,75 +73,104 @@
 
 @if (ShowcaseCatalog.IsPublished)
 {
-<section class="container bd-gutter bd-home mb-5" aria-labelledby="home-showcase-heading">
-    <div class="col-lg-7 mb-4 mx-auto text-md-center">
-        <h2 class="mb-3 fw-semibold lh-sm" id="home-showcase-heading">Showcase <Badge Color="BadgeColor.Success">New</Badge></h2>
-        <p class="text-muted mb-0">See what you can build: @ShowcaseCatalog.Sites.Count complete, interactive sample websites the Blazor Bootstrap team built with only Blazor Bootstrap components.</p>
+<section class="container-xxl bd-gutter bd-home bd-home-section" aria-labelledby="home-showcase-heading">
+    <div class="bd-home-section-head">
+        <div>
+            <h2 class="fw-semibold lh-sm mb-2" id="home-showcase-heading">Showcase <Badge Color="BadgeColor.Success">New</Badge></h2>
+            <p class="text-body-secondary mb-0">See what you can build: @ShowcaseCatalog.Sites.Count complete, interactive sample websites the Blazor Bootstrap team built with only Blazor Bootstrap components.</p>
+        </div>
+        <a class="btn btn-primary flex-shrink-0" href="@DemoRouteConstants.Showcase_URL_Prefix">Explore the Showcase <Icon Name="IconName.ArrowRight" class="ms-1" aria-hidden="true" /></a>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+    <div class="row row-cols-2 row-cols-lg-4 g-3">
         @foreach (var site in ShowcaseCatalog.FeaturedSites)
         {
             <div class="col">
-                <a class="card h-100 text-decoration-none overflow-hidden" href="@site.Url">
+                <a class="card bd-home-site h-100 text-decoration-none overflow-hidden" href="@site.Url">
                     <ShowcaseShot Site="site" />
-                    <span class="card-body">
+                    <span class="card-body p-2 p-sm-3">
                         <span class="d-block fw-semibold text-body">@site.Name</span>
-                        <small class="text-muted">@site.Tagline</small>
+                        <small class="bd-home-site-tagline text-body-secondary">@site.Tagline</small>
                     </span>
                 </a>
             </div>
         }
     </div>
-    <div class="text-md-center mt-4">
-        <a class="btn btn-primary" href="@DemoRouteConstants.Showcase_URL_Prefix">Explore the Showcase <Icon Name="IconName.ArrowRight" class="ms-1" aria-hidden="true" /></a>
-    </div>
 </section>
 }
 
-<section class="container bd-gutter bd-home mb-5" id="components" aria-labelledby="components-heading">
-    <div class="col-lg-7 mb-4 mx-auto text-md-center">
-        <h2 class="mb-3 fw-semibold lh-sm" id="components-heading">Components</h2>
-        <p class="text-body-secondary mb-0">Every Blazor Bootstrap component, grouped by category. Each card opens its demo.</p>
-    </div>
-
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <label class="form-label fw-semibold" for="home-filter">Filter components</label>
-            <input type="search" id="home-filter" class="form-control" autocomplete="off" aria-describedby="home-filter-status"
+<section class="container-xxl bd-gutter bd-home bd-home-section" id="components" aria-labelledby="components-heading">
+    <div class="bd-home-section-head">
+        <div>
+            <h2 class="fw-semibold lh-sm mb-2" id="components-heading">Components</h2>
+            <p class="text-body-secondary mb-0">@HomeCatalog.TotalCount components in @HomeCatalog.Categories.Count groups. Search for the one you need, or browse them all below.</p>
+        </div>
+        <div class="bd-home-filter">
+            <label class="form-label fw-semibold" for="home-filter">Search components</label>
+            <input type="search" id="home-filter" class="form-control" autocomplete="off" placeholder="Grid, date, upload…" aria-describedby="home-filter-status"
                    @bind="filterText" @bind:event="oninput" />
-            <p class="small text-body-secondary mt-2 mb-0" id="home-filter-status" role="status">@FilterStatusText</p>
+            <p class="small text-body-secondary mt-1 mb-0" id="home-filter-status" role="status">@FilterStatusText</p>
         </div>
     </div>
 
-    @foreach (var category in ShownCategories)
+    @if (IsFiltering)
     {
-        <h3 class="h5 fw-semibold mt-5 mb-3">@category.Name</h3>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
-            @foreach (var item in category.Items)
-            {
-                <div class="col">
-                    <div class="card h-100 bd-home-card">
-                        <div class="card-body d-flex align-items-start gap-3">
-                            <Icon Name="@item.Icon" class="fs-4 text-primary flex-shrink-0" aria-hidden="true" />
-                            <div>
-                                <a class="stretched-link fw-semibold text-decoration-none" href="@item.Href">
-                                    @item.Name
-                                    @* The explicit space keeps the link's accessible name "Avatar New", not "AvatarNew". *@
-                                    @if (item.Badge == HomeCatalogBadge.New)
-                                    {
-                                        @(" ")<Badge Color="BadgeColor.Danger">New</Badge>
-                                    }
-                                    else if (item.Badge == HomeCatalogBadge.Updated)
-                                    {
-                                        @(" ")<Badge Color="BadgeColor.Success">Updated</Badge>
-                                    }
+        @foreach (var category in ShownCategories)
+        {
+            <h3 class="h6 fw-semibold mt-4 mb-3">@category.Name</h3>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+                @foreach (var item in category.Items)
+                {
+                    <div class="col">@CatalogCard(item)</div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        @* Open by default so every component is visible. A native disclosure lets visitors collapse it, works before the page is interactive, and keeps every link in the prerendered HTML. *@
+        <details class="bd-home-all" open>
+            <summary class="bd-home-all-toggle d-flex align-items-center justify-content-between gap-3 px-3 py-3 rounded-3">
+                <span class="fw-semibold">All @HomeCatalog.TotalCount components by category</span>
+                <Icon Name="IconName.ChevronDown" class="bd-home-all-chevron flex-shrink-0" aria-hidden="true" />
+            </summary>
+            <div class="pt-2">
+                @foreach (var category in HomeCatalog.Categories)
+                {
+                    <h3 class="h6 fw-semibold mt-4 mb-2">@category.Name <span class="fw-normal text-body-secondary">(@category.Items.Count)</span></h3>
+                    <ul class="bd-home-index list-unstyled mb-0">
+                        @foreach (var item in category.Items)
+                        {
+                            <li>
+                                <a class="d-inline-flex align-items-center gap-2 py-1" href="@item.Href">
+                                    <Icon Name="@item.Icon" class="text-primary flex-shrink-0" aria-hidden="true" />
+                                    <span>@item.Name@BadgeFor(item)</span>
                                 </a>
-                                <p class="small text-body-secondary mt-1 mb-0">@item.Description</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </details>
     }
 </section>
+
+@code {
+    private RenderFragment CatalogCard(HomeCatalogItem item) =>
+        @<div class="card h-100 bd-home-card">
+            <div class="card-body d-flex align-items-start gap-3 p-3">
+                <Icon Name="@item.Icon" class="fs-4 text-primary flex-shrink-0" aria-hidden="true" />
+                <div>
+                    <a class="stretched-link fw-semibold text-decoration-none" href="@item.Href">@item.Name@BadgeFor(item)</a>
+                    <p class="small text-body-secondary mt-1 mb-0">@item.Description</p>
+                </div>
+            </div>
+        </div>;
+
+    // The explicit space keeps the link's accessible name "Avatar New", not "AvatarNew".
+    private RenderFragment BadgeFor(HomeCatalogItem item) => item.Badge switch
+    {
+        HomeCatalogBadge.New => @<text>@(" ")<Badge Color="BadgeColor.Danger">New</Badge></text>,
+        HomeCatalogBadge.Updated => @<text>@(" ")<Badge Color="BadgeColor.Success">Updated</Badge></text>,
+        _ => @<text></text>
+    };
+}

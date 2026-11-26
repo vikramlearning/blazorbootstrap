@@ -2,20 +2,16 @@
 @inherits ComponentBase
 
 <footer class="bd-footer bg-body-tertiary border-top pt-5 pb-3">
-    <div class="container px-4 px-md-3">
-        <div class="row">
-            <div class="col-lg-4 mb-4">
+    <div class="container-xxl bd-gutter">
+        <div class="row gy-4 mb-4">
+            <div class="col-lg-4">
                 <BrandHomeLink />
-                <p class="small text-body-secondary mb-3">Free, open-source Blazor components built on Bootstrap 5, made by the <a class="text-decoration-underline" href="https://www.nuget.org/packages/Blazor.Bootstrap" target="_blank" rel="noopener">Blazor Bootstrap</a> team and our contributors.</p>
-                <ul class="list-unstyled d-flex gap-3 fs-5 mb-0">
-                    <li><a href="@GithubUrl" target="_blank" rel="noopener" aria-label="Blazor Bootstrap on GitHub"><Icon Name="IconName.Github" aria-hidden="true" /></a></li>
-                    <li><a href="@TwitterUrl" target="_blank" rel="noopener" aria-label="Blazor Bootstrap on X"><Icon Name="IconName.TwitterX" aria-hidden="true" /></a></li>
-                    <li><a href="@LinkedInUrl" target="_blank" rel="noopener" aria-label="Blazor Bootstrap on LinkedIn"><Icon Name="IconName.Linkedin" aria-hidden="true" /></a></li>
-                </ul>
+                <p class="small text-body-secondary mb-0 bd-footer-about">Free, open-source Blazor components built on Bootstrap 5, available on <a class="text-decoration-underline" href="https://www.nuget.org/packages/Blazor.Bootstrap" target="_blank" rel="noopener">NuGet</a>.</p>
             </div>
+            @* Four equal link groups: two by two on a phone, one row from 768px. *@
             <div class="col-lg-8">
-                <div class="row justify-content-lg-end">
-                    <div class="col-6 col-md-4 col-lg-3 mb-3">
+                <div class="row gy-4">
+                    <div class="col-6 col-md-3">
                         <h2 class="h6 fw-semibold">Product</h2>
                         <ul class="list-unstyled small mb-0">
                             <li class="mb-2"><a href="@DemosUrl">Demos</a></li>
@@ -24,7 +20,7 @@
                             <li class="mb-2"><a href="@BlogUrl" target="_blank" rel="noopener">Blog</a></li>
                         </ul>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3 mb-3">
+                    <div class="col-6 col-md-3">
                         <h2 class="h6 fw-semibold">Resources</h2>
                         <ul class="list-unstyled small mb-0">
                             <li class="mb-2"><a href="/demos/getting-started">Getting started</a></li>
@@ -32,7 +28,7 @@
                             <li class="mb-2"><a href="https://github.com/vikramlearning/blazorbootstrap-starter-templates" target="_blank" rel="noopener">Starter templates</a></li>
                         </ul>
                     </div>
-                    <div class="col-6 col-md-4 col-lg-3 mb-3">
+                    <div class="col-6 col-md-3">
                         <h2 class="h6 fw-semibold">Community</h2>
                         <ul class="list-unstyled small mb-0">
                             <li class="mb-2"><a href="@GithubIssuesUrl" target="_blank" rel="noopener">Issues</a></li>
@@ -41,20 +37,31 @@
                             <li class="mb-2"><a href="@StackoverflowUrl" target="_blank" rel="noopener">Stack Overflow</a></li>
                         </ul>
                     </div>
+                    <div class="col-6 col-md-3">
+                        <h2 class="h6 fw-semibold">Follow</h2>
+                        <ul class="list-unstyled small mb-0">
+                            <li class="mb-2"><a class="d-inline-flex align-items-center gap-2" href="@GithubUrl" target="_blank" rel="noopener"><Icon Name="IconName.Github" aria-hidden="true" />GitHub</a></li>
+                            <li class="mb-2"><a class="d-inline-flex align-items-center gap-2" href="@TwitterUrl" target="_blank" rel="noopener"><Icon Name="IconName.TwitterX" aria-hidden="true" />X</a></li>
+                            <li class="mb-2"><a class="d-inline-flex align-items-center gap-2" href="@LinkedInUrl" target="_blank" rel="noopener"><Icon Name="IconName.Linkedin" aria-hidden="true" />LinkedIn</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
         @if (Note is not null)
         {
-            <p class="small text-body-secondary border-top pt-3 mt-2 mb-0">@Note</p>
+            <p class="small text-body-secondary border-top pt-3 mb-0">@Note</p>
         }
-        <div class="d-flex flex-column flex-md-row justify-content-between gap-2 border-top pt-3 mt-2 small text-body-secondary">
-            <span>&copy; @DateTime.Now.Year Blazor Bootstrap &middot; Code licensed <a class="text-decoration-underline" href="https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt" target="_blank" rel="license noopener">Apache License 2.0</a></span>
+        @* Three items in one row from 992px (copyright, credit, version); stacked below that. *@
+        <div class="d-flex flex-column flex-lg-row justify-content-between gap-1 gap-lg-3 border-top pt-3 mt-3 small text-body-secondary">
+            <span>&copy; @DateTime.Now.Year Blazor Bootstrap. Code licensed under the <a class="text-decoration-underline" href="https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt" target="_blank" rel="license noopener">Apache License 2.0</a>.</span>
+            @* The heart is decorative to the eye; screen readers hear "Built with love". *@
+            <span>Built with <Icon Name="IconName.HeartFill" class="bd-footer-heart" aria-hidden="true" /><span class="visually-hidden">love</span> by the Blazor Bootstrap team and contributors</span>
             <span>
                 @Version
                 @if (!string.IsNullOrWhiteSpace(DotNetVersion))
                 {
-                    <text> &middot; Powered by @DotNetVersion</text>
+                    <text>, powered by @DotNetVersion</text>
                 }
             </span>
         </div>
