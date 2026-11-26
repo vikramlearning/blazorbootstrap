@@ -44,6 +44,15 @@ public partial class Index : BlazorBootstrapComponentBase
 
     private string pageUrl = "/";
 
+    // One guide per project type, in the order of the demo site's getting started table.
+    private static readonly IReadOnlyList<(string Name, string Url)> setupGuides = new[]
+    {
+        ("Blazor WebAssembly", "https://docs.blazorbootstrap.com/getting-started/blazor-webassembly-net-11"),
+        ("Web App (Server)", "https://docs.blazorbootstrap.com/getting-started/blazor-webapp-server-global-net-11"),
+        ("Web App (Auto)", "https://docs.blazorbootstrap.com/getting-started/blazor-webapp-auto-global-net-11"),
+        ("MAUI Blazor Hybrid", "https://docs.blazorbootstrap.com/getting-started/maui-blazor-net-11")
+    };
+
     private string releaseNotesUrl = default!;
 
     private string releaseShortDescription = default!;
@@ -212,11 +221,16 @@ public partial class Index : BlazorBootstrapComponentBase
     {
         get
         {
+            if (!IsFiltering)
+                return $"Searches all {HomeCatalog.TotalCount} components by name and description.";
+
             var shownCount = ShownCategories.Sum(category => category.Items.Count);
 
-            return shownCount == 0 ? "No components match" : $"{shownCount} of {HomeCatalog.TotalCount} shown";
+            return shownCount == 0 ? "No components match" : $"{shownCount} of {HomeCatalog.TotalCount} match";
         }
     }
+
+    private bool IsFiltering => filterText.Trim().Length > 0;
 
     /// <summary>
     /// Gets the categories and components that match the filter text by name or description, ignoring case.

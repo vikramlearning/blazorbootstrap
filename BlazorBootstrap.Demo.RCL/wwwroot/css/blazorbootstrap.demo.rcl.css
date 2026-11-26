@@ -234,9 +234,139 @@ h1:focus-visible {
     color: var(--bs-body-color);
 }
 
+/* Three equal boxes in one row on a phone (no orphaned third box); natural widths from 576px. */
 .bd-home-stats > div {
+    flex: 1 1 0;
+    min-width: 0;
     background-color: rgba(var(--bs-body-bg-rgb), 0.75);
     border: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+@media (min-width: 576px) {
+    .bd-home-stats > div {
+        flex: 0 0 auto;
+        min-width: 8.5rem;
+    }
+}
+
+/* Setup guide links under the install command: pills that read as a choice of one. */
+.bd-home-guide {
+    font-size: .875rem;
+    color: var(--bs-body-color);
+    background-color: rgba(var(--bs-body-bg-rgb), 0.75);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+    .bd-home-guide:hover {
+        color: var(--bs-body-color);
+        border-color: var(--bs-primary);
+        text-decoration: underline !important;
+    }
+
+/* Sections below the hero: heading and intro on the left, the section's action on the right from 768px. */
+.bd-home-section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+    .bd-home-section + .bd-home-section {
+        border-top: var(--bs-border-width) solid var(--bs-border-color-translucent);
+    }
+
+.bd-home-section-head {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+    .bd-home-section-head > div:first-child {
+        max-width: 42rem;
+    }
+
+@media (min-width: 768px) {
+    .bd-home-section-head {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 2rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .bd-home-filter {
+        flex: 0 0 20rem;
+    }
+}
+
+/* Showcase cards: name only on a phone (two across), the tagline clamped to two lines from 576px. */
+.bd-home-site-tagline {
+    display: none;
+}
+
+@media (min-width: 576px) {
+    .bd-home-site-tagline {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+}
+
+/* Full catalog disclosure. */
+.bd-home-all-toggle {
+    list-style: none;
+    cursor: pointer;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-tertiary-bg);
+}
+
+    .bd-home-all-toggle::-webkit-details-marker {
+        display: none;
+    }
+
+    .bd-home-all-toggle:hover {
+        border-color: var(--bs-primary);
+    }
+
+.bd-home-all[open] .bd-home-all-chevron {
+    transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .bd-home-all-chevron {
+        transition: transform .15s ease-in-out;
+    }
+}
+
+.bd-home-index {
+    columns: 2;
+    column-gap: 1.5rem;
+}
+
+    .bd-home-index > li {
+        break-inside: avoid;
+    }
+
+    /* A list of links, so no underline until hover; the underline would also run under the badges. */
+    .bd-home-index a {
+        text-decoration: none;
+    }
+
+        .bd-home-index a:hover > span:last-child {
+            text-decoration: underline;
+        }
+
+@media (min-width: 768px) {
+    .bd-home-index {
+        columns: 3;
+    }
+}
+
+@media (min-width: 1200px) {
+    .bd-home-index {
+        columns: 4;
+    }
 }
 
 .bd-home-stats > div:has(a:hover),
@@ -363,6 +493,33 @@ h1:focus-visible {
     width: 48px;
     height: 48px;
     object-fit: contain;
+}
+
+/* Narrower buttons keep Website, GitHub and NuGet on one line in a three-across card at 768px. */
+.bd-lib-links {
+    gap: .375rem;
+}
+
+    .bd-lib-links .btn {
+        --bs-btn-padding-x: .625rem;
+    }
+
+/* Tablet: each library card is one line (name, description, links); the name column has a fixed width so the three cards line up. */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .bd-lib-head {
+        flex: 0 0 14rem;
+    }
+}
+
+/* Footer credit heart: Bootstrap danger red, which keeps 3:1 against the footer background in both themes. */
+.bd-footer-heart {
+    color: var(--bs-danger);
+    vertical-align: -.125em;
+}
+
+/* The footer intro reads as a short paragraph, not a full-width line, when the brand column stacks. */
+.bd-footer-about {
+    max-width: 24rem;
 }
 
 /*** END: home ***/
