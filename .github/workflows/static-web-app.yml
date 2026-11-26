@@ -48,8 +48,10 @@ jobs:
         run: dotnet build ${{ env.PROJECT }} -c ${{ env.BUILD_CONFIG }} -f ${{ env.DOTNET_VERSION }} --no-restore
         
       # .NET Publish
+      # No --no-build: with the .NET 11 SDK it skips the publish-time OverrideHtmlAssetPlaceholders step, so index.html
+      # ships with its #[.{fingerprint}] placeholders and the app never starts. The build above makes this one incremental.
       - name: .NET Publish
-        run: dotnet publish ${{ env.PROJECT }} -c ${{ env.BUILD_CONFIG }} -o output -f ${{ env.DOTNET_VERSION }} --no-build
+        run: dotnet publish ${{ env.PROJECT }} -c ${{ env.BUILD_CONFIG }} -o output -f ${{ env.DOTNET_VERSION }} --no-restore
       
       # Azure Static Web App Deployment Action
       - name: Build And Deploy Blazor WASM App

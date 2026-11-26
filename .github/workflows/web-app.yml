@@ -50,11 +50,16 @@ jobs:
         with:
           name: .net-app
 
+      # clean: true empties wwwroot before extracting, so no file from an earlier release survives. A stale static
+      # asset makes MapStaticAssets answer 500, because its size no longer matches the endpoints manifest.
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: 'blazorbootstrap'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1F484B42E8E9491C82F21EED2A6E2C15 }}
           package: .
+          type: zip
+          clean: true
+          restart: true
