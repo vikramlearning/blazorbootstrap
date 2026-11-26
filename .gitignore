@@ -22,6 +22,8 @@ mono_crash.*
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
+# Release kits (notes, social posts, promo videos) are source files, not build output.
+!/nuget/release/
 x64/
 x86/
 [Ww][Ii][Nn]32/
