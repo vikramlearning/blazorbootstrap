@@ -132,11 +132,10 @@ public static class Program
     {
         var redirects = new JsonArray();
 
+        // One rule per legacy URL. Azure Static Web Apps matches a route with or without its trailing slash, and it
+        // rejects the whole deployment when two rules normalize to the same route (for example "/alerts" and "/alerts/").
         foreach (var (from, to) in SeoRoutes.LegacyRedirects.OrderBy(pair => pair.Key, StringComparer.Ordinal))
-        {
             redirects.Add(new JsonObject { ["route"] = from, ["redirect"] = to, ["statusCode"] = 301 });
-            redirects.Add(new JsonObject { ["route"] = from + "/", ["redirect"] = to, ["statusCode"] = 301 });
-        }
 
         var config = new JsonObject
         {
