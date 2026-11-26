@@ -18,7 +18,7 @@
 
 <br>
 
-**NOTE:** We strongly recommend all BlazorBootstrap users upgrade to version 4.0.0. [Read more...](https://docs.blazorbootstrap.com/blog/2025/12/01/upgrade-to-v4.0.0)
+**NOTE:** We strongly recommend all BlazorBootstrap users upgrade to version 4.1.0. [Read more...](https://docs.blazorbootstrap.com/blog/upgrade-to-v4.1.0)
 
 ## Status
 

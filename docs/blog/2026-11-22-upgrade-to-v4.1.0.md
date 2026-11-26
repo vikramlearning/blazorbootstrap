@@ -1,5 +1,6 @@
 ---
 title: Upgrade to v4.1.0
+slug: upgrade-to-v4.1.0
 description: "Upgrade to Blazor Bootstrap 4.1.0: .NET 11 support, Grid sorting and MindMap markup changes, and the new localizable text parameters."
 draft: true
 authors:
@@ -9,7 +10,7 @@ authors:
   image_url: https://avatars.githubusercontent.com/u/2337067
 ---
 
-<!-- Draft for the 4.1.0 release: set the file date to the release date and remove draft: true when publishing. -->
+<!-- Draft for the 4.1.0 release: set the file date to the release date and remove draft: true when publishing. The slug keeps the URL (/blog/upgrade-to-v4.1.0) independent of that date, because the READMEs link to it. -->
 
 ## Recommendation
 
@@ -70,4 +71,4 @@ Chart components such as `LineChart`, `LineChartDataset`, `LineChartOptions`, an
 
 If a translation of one of these texts has placeholders that don't match, it is shown as written instead of failing.
 
-See the [Grid](/docs/components/grid) page for the new column chooser and CSV export.
+See the [Grid](/components/grid) page for the new column chooser and CSV export.
