@@ -460,6 +460,13 @@ h1:focus-visible {
     padding: 0 !important;
 }
 
+/* <main> is the scrolling area, so it must also contain its absolutely positioned content. Otherwise an element such
+   as the footer's .visually-hidden "love" label positions against .bb-page, escapes main's overflow clipping, and
+   stretches the document to the content's full height: a second, page-level scrollbar. */
+.bb-page > main {
+    position: relative;
+}
+
 .bd-footer-host .container {
     max-width: none;
 }
