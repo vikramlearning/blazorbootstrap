@@ -41,11 +41,15 @@ The package now includes a `net11.0` build alongside its .NET 8, .NET 9 and .NET
 ### Calendar
 An event calendar with Month, Week, Work week, Day and Agenda views, drag to move and resize events, cultures and right-to-left layout.
 
+[![Blazor Bootstrap: Calendar component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/calendar.png "Blazor Bootstrap: Calendar component")](https://demos.blazorbootstrap.com/demos/calendar)
+
 - PR [#1361](https://github.com/vikramlearning/blazorbootstrap/pull/1361)
 - Docs: [Calendar](https://docs.blazorbootstrap.com/components/calendar) | Demo: [Calendar](https://demos.blazorbootstrap.com/demos/calendar)
 
 ### Timeline
 Shows events in order: vertical, horizontal or alternating, with dot, icon or custom markers, declared in markup or bound to data.
+
+[![Blazor Bootstrap: Timeline component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/timeline.png "Blazor Bootstrap: Timeline component")](https://demos.blazorbootstrap.com/demos/timeline)
 
 - PR [#1360](https://github.com/vikramlearning/blazorbootstrap/pull/1360)
 - Docs: [Timeline](https://docs.blazorbootstrap.com/components/timeline) | Demo: [Timeline](https://demos.blazorbootstrap.com/demos/timeline)
@@ -53,11 +57,15 @@ Shows events in order: vertical, horizontal or alternating, with dot, icon or cu
 ### Mind Map
 Shows hierarchical data as a collapsible node-link tree that grows right, left, to both sides, down or up, with full keyboard navigation.
 
+[![Blazor Bootstrap: Mind Map component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/mind-map.png "Blazor Bootstrap: Mind Map component")](https://demos.blazorbootstrap.com/demos/mind-map)
+
 - PR [#1342](https://github.com/vikramlearning/blazorbootstrap/pull/1342)
 - Docs: [Mind Map](https://docs.blazorbootstrap.com/components/mind-map) | Demo: [Mind Map](https://demos.blazorbootstrap.com/demos/mind-map)
 
 ### Table
 Renders a read-only Bootstrap 5.3 table from a list, with declared columns, captions, row headers, row and cell colors, footers and responsive scrolling. Use it when you need a styled table without the Grid's paging, sorting and filtering.
+
+[![Blazor Bootstrap: Table component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/table.png "Blazor Bootstrap: Table component")](https://demos.blazorbootstrap.com/demos/table)
 
 - PR [#1415](https://github.com/vikramlearning/blazorbootstrap/pull/1415)
 - Docs: [Table](https://docs.blazorbootstrap.com/components/table) | Demo: [Table](https://demos.blazorbootstrap.com/demos/table)
@@ -65,11 +73,15 @@ Renders a read-only Bootstrap 5.3 table from a list, with declared columns, capt
 ### Avatar and AvatarGroup
 `Avatar` shows a person as an image, initials or icon with an optional status. `AvatarGroup` stacks avatars with a "+N" overflow.
 
+[![Blazor Bootstrap: Avatar component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/avatar.png "Blazor Bootstrap: Avatar component")](https://demos.blazorbootstrap.com/demos/avatar)
+
 - PR [#1344](https://github.com/vikramlearning/blazorbootstrap/pull/1344)
 - Docs: [Avatar](https://docs.blazorbootstrap.com/components/avatar) | Demo: [Avatar](https://demos.blazorbootstrap.com/demos/avatar)
 
 ### Rating Input
 Lets users select or display a score with icons, with half values, keyboard support and `EditForm` validation.
+
+[![Blazor Bootstrap: Rating Input component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/rating-input.png "Blazor Bootstrap: Rating Input component")](https://demos.blazorbootstrap.com/demos/form/rating-input)
 
 - PR [#1340](https://github.com/vikramlearning/blazorbootstrap/pull/1340)
 - Docs: [Rating Input](https://docs.blazorbootstrap.com/forms/rating-input) | Demo: [Rating Input](https://demos.blazorbootstrap.com/demos/form/rating-input)
@@ -77,11 +89,15 @@ Lets users select or display a score with icons, with half values, keyboard supp
 ### Navbar
 A responsive header with brand, links, dropdowns and forms that collapses behind a toggler or into an offcanvas.
 
+[![Blazor Bootstrap: Navbar component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/navbar.png "Blazor Bootstrap: Navbar component")](https://demos.blazorbootstrap.com/demos/navbar)
+
 - PR [#1350](https://github.com/vikramlearning/blazorbootstrap/pull/1350)
 - Docs: [Navbar](https://docs.blazorbootstrap.com/components/navbar) | Demo: [Navbar](https://demos.blazorbootstrap.com/demos/navbar)
 
 ### List Group
 Shows items, links or buttons with single, multiple, checkbox or radio selection, or as tabs that switch content panes.
+
+[![Blazor Bootstrap: List Group component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/list-group.png "Blazor Bootstrap: List Group component")](https://demos.blazorbootstrap.com/demos/list-group)
 
 - PR [#1352](https://github.com/vikramlearning/blazorbootstrap/pull/1352)
 - Docs: [List Group](https://docs.blazorbootstrap.com/components/list-group) | Demo: [List Group](https://demos.blazorbootstrap.com/demos/list-group)
@@ -89,17 +105,23 @@ Shows items, links or buttons with single, multiple, checkbox or radio selection
 ### Popover
 Shows a title and rich content next to a trigger, with placements, triggers, colors, and content that updates while the popover is open.
 
+[![Blazor Bootstrap: Popover component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/popover.png "Blazor Bootstrap: Popover component")](https://demos.blazorbootstrap.com/demos/popover)
+
 - PR [#1353](https://github.com/vikramlearning/blazorbootstrap/pull/1353)
 - Docs: [Popover](https://docs.blazorbootstrap.com/components/popover) | Demo: [Popover](https://demos.blazorbootstrap.com/demos/popover)
 
 ### Input Group
 Adds text, icon, checkbox, radio, button and dropdown add-ons on either side of form inputs, as in Bootstrap 5.3.
 
+[![Blazor Bootstrap: Input Group component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/input-group.png "Blazor Bootstrap: Input Group component")](https://demos.blazorbootstrap.com/demos/form/input-group)
+
 - PR [#1348](https://github.com/vikramlearning/blazorbootstrap/pull/1348), [#1349](https://github.com/vikramlearning/blazorbootstrap/pull/1349)
 - Docs: [Input Group](https://docs.blazorbootstrap.com/components/input-group) | Demo: [Input Group](https://demos.blazorbootstrap.com/demos/form/input-group)
 
 ### Button Group
 Joins buttons into groups and toolbars, and turns toggle buttons into radio and checkbox inputs.
+
+[![Blazor Bootstrap: Button Group component](https://raw.githubusercontent.com/vikramlearning/blazorbootstrap/main/BlazorBootstrap.Demo.RCL/wwwroot/images/screenshots/button-group.png "Blazor Bootstrap: Button Group component")](https://demos.blazorbootstrap.com/demos/button-group)
 
 - PR [#1349](https://github.com/vikramlearning/blazorbootstrap/pull/1349)
 - Docs: [Button Group](https://docs.blazorbootstrap.com/components/button-group) | Demo: [Button Group](https://demos.blazorbootstrap.com/demos/button-group)

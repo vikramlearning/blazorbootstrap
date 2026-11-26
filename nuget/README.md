@@ -96,6 +96,7 @@ This is a breaking change for existing chart users: install `BlazorExpress.Chart
 | Spinners | [Docs](https://docs.blazorbootstrap.com/components/spinners) | [Demos](https://demos.blazorbootstrap.com/demos/spinners) |
 | Split View | [Docs](https://docs.blazorbootstrap.com/components/split-view) | [Demos](https://demos.blazorbootstrap.com/demos/split-view) |
 | Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/demos/form/switch) |
+| Table | [Docs](https://docs.blazorbootstrap.com/components/table) | [Demos](https://demos.blazorbootstrap.com/demos/table) |
 | Tabs | [Docs](https://docs.blazorbootstrap.com/components/tabs) | [Demos](https://demos.blazorbootstrap.com/demos/tabs) |
 | Text Input | [Docs](https://docs.blazorbootstrap.com/forms/text-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/text-input) |
 | Text Area Input | [Docs](https://docs.blazorbootstrap.com/forms/textarea-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/text-area-input) |
