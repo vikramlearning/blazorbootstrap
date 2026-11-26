@@ -21,7 +21,7 @@
     </Card>
 </div>
 <div>
-    <Button Color="ButtonColor.Success" Class="my-3" Size="ButtonSize.ExtraSmall" @onclick="RemoveCustomerVikram">x Remove Vikram Reddy Tab</Button>
+    <Button Color="ButtonColor.Success" Class="my-3" Size="ButtonSize.ExtraSmall" @onclick="RemoveCustomerOliver">x Remove Oliver Grant Tab</Button>
 </div>
 
 @code {
@@ -34,7 +34,7 @@
     {
         customers = new() {
             new(1, "Marvin Klein"),
-            new(2, "Vikram Reddy"),
+            new(2, "Oliver Grant"),
             new(3, "Bandita PA"),
             new(4, "Dan H"),
             new(5, "Joe JJ"),
@@ -43,9 +43,9 @@
         count = customers.Count;
     }
 
-    private void RemoveCustomerVikram()
+    private void RemoveCustomerOliver()
     {
-        var customer = customers.FirstOrDefault(c => c.CustomerName == "Vikram Reddy");
+        var customer = customers.FirstOrDefault(c => c.CustomerName == "Oliver Grant");
         if (customer != null)
         {
             customers.Remove(customer);
